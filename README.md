@@ -1,5 +1,5 @@
 # MidiPlayer
-Providing a simple interface to read and visualize midis with javascript
+Providing a simple interface to read and visualize midi files with javascript. It is based on [MIDI.js](https://github.com/mudcube/MIDI.js) by [mudcube](https://github.com/mudcube). If you also want to play sounds you should check it out.
 
 ## Basic Example
 This example demonstrates the basic usage of MidiPlayer. You can also view a [complete example](./examples/basic.html) and its [live demo](https://htmlpreview.github.io/?https://github.com/Otto-AA/MidiPlayer/blob/master/examples/basic.html)
