@@ -1,0 +1,42 @@
+<DOCTYPE html>
+<html>
+<head>
+    <title>Midi Player</title>
+</head>
+<body>
+    <label for="midiFileInput">Please choose a midi file</label>
+    <input type="file" id="midiFileInput" accept=".mid">
+
+    <!-- MidiPlayer Library -->
+    <script type="application/javascript" src="../build/MidiPlayer.js"></script>
+    
+    <script type="application/javascript">
+        // Create midi player
+        var player = new MidiPlayer();
+        player.addCallback('play', function() { document.body.innerHTML += '<p>Event: Start</p>'; });
+        player.addCallback('noteOn', function(event) { document.body.innerHTML += '<p>Event: noteOn:          <code>' + JSON.stringify(event) + '</code>'; });
+        player.addCallback('noteOff', function(event) { document.body.innerHTML += '<p>Event: noteOff:         <code>' + JSON.stringify(event) + '</code>'; });
+        player.addCallback('finish', function() { document.body.innerHTML += '<p>Event: Finish</p>'; });
+
+        // Load file and start player when a file is given
+        var fileReader = new FileReader();
+        var midiFileInput = document.getElementById('midiFileInput');
+        midiFileInput.addEventListener('change', inputEvent => {
+            if (!inputEvent.target.files.length)
+                return false;
+
+            fileReader.readAsArrayBuffer(inputEvent.target.files[0]);
+            fileReader.onload = file => {
+                var uint8Midi = new Uint8Array(file.target.result);
+
+                // Stop player in case it is already playing
+                player.stop();
+                player.loadFromUint8Array(uint8Midi)
+                    .then(() => {
+                        console.log('Loaded midiPlayer', player.getMidiEvents());
+                        player.play();
+                    });
+            };
+        });
+    </script>
+</body>
