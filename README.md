@@ -2,7 +2,7 @@
 Providing a simple interface to read and visualize midis with javascript
 
 ## Basic Example
-This example demonstrates the basic usage of MidiPlayer. You can view the complete code [here](./examples/basic.html).
+This example demonstrates the basic usage of MidiPlayer. You can also view a [complete example](./examples/basic.html) and its [live demo](https://htmlpreview.github.io/?https://github.com/Otto-AA/MidiPlayer/blob/master/examples/basic.html)
 ```javascript
 var player = new MidiPlayer();
 player.addCallback('noteOn', function (event) {/* handle noteOn event */});
