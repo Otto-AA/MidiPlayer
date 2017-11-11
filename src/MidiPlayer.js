@@ -63,6 +63,103 @@ class MidiPlayer {
     return this.getMidiEvents();
   }
   
+  /** addCallback
+   * Add an event listener
+   * @param {string}  event   - specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
+   */
+  addCallback(event, callback) {
+    this._callbacks[event].push(callback);
+  }
+  
+  /** play
+   * @description start playing the parsed midi from the current time
+   */
+  async play() {
+    this._startingTime = (new Date()).getTime() - this._currentTime;
+    this._playing = true;
+    
+    this.triggerCallbacks('play');
+    
+    while (this._playing && this._events.length > 0) {
+      const nextEvent = this._events.shift();
+      await this._waitForEvent(nextEvent);
+      if (!this._playing)  // Check another time because we maybe waited a few seconds for the next event
+        break;
+      this._handleEvent(nextEvent);
+      this._playedEvents.push(nextEvent);
+    }
+    
+    this.pause();
+    if (!this._events.length) {
+      this.triggerCallbacks('finish');
+    }
+  }
+  
+  /** pause
+   * @description pauses the playing at the current time
+   */
+  pause() {
+    this._playing = false;
+    this.triggerCallbacks('pause');
+  }
+
+  /** stop
+   * @description pauses the playing and sets the current time to zero
+   */
+  stop() {
+    this.pause();
+    this.setTime(0);
+    this.triggerCallbacks('stop');
+  }
+  
+  /** setTime
+   * @param {int} miliseconds
+   */
+  setTime(miliseconds) {
+    // Move events from this.events to this.playedEvents or the other way round
+    while (this._events.length && miliseconds > this._events[0].timestamp) {
+      this._playedEvents.push(this._events.shift());
+    }
+    while (this._playedEvents.length && miliseconds < this._playedEvents[this._playedEvents.length - 1].timestamp) {
+      this._events.unshift(this._playedEvents.pop());
+    }
+    // Set the current time    
+    this._startingTime += miliseconds - this._currentTime;
+    this._currentTime = miliseconds;
+  }
+  
+  /** getCurrentTime
+   * @returns {int}   - current time in miliseconds
+   */
+  getCurrentTime() {
+    if (this._playing) {
+      this._updateCurrentTime();
+    }
+
+    return this._currentTime;
+  }
+
+  /** setSpeed
+   * @param {int} speed   - relative speed (1 is normal, 2 is double, 0.5 is half)
+   */
+  setSpeed(speed) {
+    this._speed = speed;
+  }
+
+  /** getCurrentSpeed
+   * @returns {int}   - current relative speed
+   */
+  getCurrentSpeed() {
+    return this._speed;
+  }
+
+  /** isPlaying
+   * @returns {bool}
+   */
+  isPlaying() {
+    return this._playing;
+  }
+
   /** getMidiEvents
    * @returns {array}   - containing all loaded events
    */
@@ -115,114 +212,17 @@ class MidiPlayer {
     return [...previousEvents, ...nextEvents];
   }
   
-  /** play
-   * @description start playing the parsed midi from the current time
-   */
-  async play() {
-    this._startingTime = (new Date()).getTime() - this._currentTime;
-    this._playing = true;
-    
-    this.triggerCallbacks('play');
-    
-    while (this._playing && this._events.length > 0) {
-      const nextEvent = this._events.shift();
-      await this._waitForEvent(nextEvent);
-      if (!this._playing)  // Check another time because we maybe waited a few seconds for the next event
-        break;
-      this._handleEvent(nextEvent);
-      this._playedEvents.push(nextEvent);
-    }
-    
-    this.pause();
-    if (!this._events.length) {
-      this.triggerCallbacks('finish');
-    }
-  }
-  
-  /** pause
-   * @description pauses the playing at the current time
-   */
-  pause() {
-    this._playing = false;
-    this.triggerCallbacks('pause');
-  }
-
-  /** stop
-   * @description pauses the playing and sets the current time to zero
-   */
-  stop() {
-    this.pause();
-    this.setTime(0);
-    this.triggerCallbacks('stop');
-  }
-
-  /** setTime
-   * @param {int} miliseconds
-   */
-  setTime(miliseconds) {
-    // Move events from this.events to this.playedEvents or the other way round
-    while (this._events.length && miliseconds > this._events[0].timestamp) {
-      this._playedEvents.push(this._events.shift());
-    }
-    while (this._playedEvents.length && miliseconds < this._playedEvents[this._playedEvents.length - 1].timestamp) {
-      this._events.unshift(this._playedEvents.pop());
-    }
-    // Set the current time    
-    this._startingTime += miliseconds - this._currentTime;
-    this._currentTime = miliseconds;
-  }
-  
-  /** getCurrentTime
-   * @returns {int}   - current time in miliseconds
-   */
-  getCurrentTime() {
-    if (this._playing) {
-      this._updateCurrentTime();
-    }
-
-    return this._currentTime;
-  }
-
-  /** getCurrentSpeed
-   * @returns {int}   - current relative speed
-   */
-  getCurrentSpeed() {
-    return this._speed;
-  }
-
-  /** isPlaying
-   * @returns {bool}
-   */
-  isPlaying() {
-    return this._playing;
-  }
-
-  /** _updateCurrentTime */
-  _updateCurrentTime() {
-    this._currentTime = ((new Date()).getTime() - this._startingTime) * this._speed;
-  }
-
-  /** setSpeed
-   * @param {int} speed   - relative speed (1 is normal, 2 is double, 0.5 is half)
-   */
-  setSpeed(speed) {
-    this._speed = speed;
-  }
-  
-  /** addCallback
-   * Add an event listener
-   * @param {string}  event   - specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
-   */
-  addCallback(event, callback) {
-    this._callbacks[event].push(callback);
-  }
-  
   /** triggerCallbacks
    * @param {string}  event   - the eventname which will be triggered
    * @param {any}     data    - data passed to the callbacks
    */
   triggerCallbacks(event, data) {
     this._callbacks[event].forEach(callback => callback(data));
+  }
+
+  /** _updateCurrentTime */
+  _updateCurrentTime() {
+    this._currentTime = ((new Date()).getTime() - this._startingTime) * this._speed;
   }
   
   /** _waitForEvent

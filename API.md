@@ -6,21 +6,21 @@
     -   [loadFromDataUrl](#loadfromdataurl)
     -   [loadFromUint8Array](#loadfromuint8array)
     -   [loadParsedMidi](#loadparsedmidi)
-    -   [getMidiEvents](#getmidievents)
-    -   [getNextEventsByTime](#getnexteventsbytime)
-    -   [getPreviousEventsByTime](#getpreviouseventsbytime)
-    -   [getEventsByTimeRange](#geteventsbytimerange)
+    -   [addCallback](#addcallback)
     -   [play](#play)
     -   [pause](#pause)
     -   [stop](#stop)
     -   [setTime](#settime)
     -   [getCurrentTime](#getcurrenttime)
+    -   [setSpeed](#setspeed)
     -   [getCurrentSpeed](#getcurrentspeed)
     -   [isPlaying](#isplaying)
-    -   [\_updateCurrentTime](#_updatecurrenttime)
-    -   [setSpeed](#setspeed)
-    -   [addCallback](#addcallback)
+    -   [getMidiEvents](#getmidievents)
+    -   [getNextEventsByTime](#getnexteventsbytime)
+    -   [getPreviousEventsByTime](#getpreviouseventsbytime)
+    -   [getEventsByTimeRange](#geteventsbytimerange)
     -   [triggerCallbacks](#triggercallbacks)
+    -   [\_updateCurrentTime](#_updatecurrenttime)
     -   [\_waitForEvent](#_waitforevent)
     -   [\_handleEvent](#_handleevent)
 -   [MidiParser](#midiparser)
@@ -65,6 +65,62 @@ loadParsedMidi
 
 Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** containing the formatted events
 
+### addCallback
+
+addCallback
+Add an event listener
+
+**Parameters**
+
+-   `event` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
+-   `callback`  
+
+### play
+
+start playing the parsed midi from the current time
+
+### pause
+
+pauses the playing at the current time
+
+### stop
+
+pauses the playing and sets the current time to zero
+
+### setTime
+
+setTime
+
+**Parameters**
+
+-   `miliseconds` **int** 
+
+### getCurrentTime
+
+getCurrentTime
+
+Returns **int** current time in miliseconds
+
+### setSpeed
+
+setSpeed
+
+**Parameters**
+
+-   `speed` **int** relative speed (1 is normal, 2 is double, 0.5 is half)
+
+### getCurrentSpeed
+
+getCurrentSpeed
+
+Returns **int** current relative speed
+
+### isPlaying
+
+isPlaying
+
+Returns **bool** 
+
 ### getMidiEvents
 
 getMidiEvents
@@ -102,66 +158,6 @@ getEventsByTimeRange
 
 Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** containing all events which are in the time range
 
-### play
-
-start playing the parsed midi from the current time
-
-### pause
-
-pauses the playing at the current time
-
-### stop
-
-pauses the playing and sets the current time to zero
-
-### setTime
-
-setTime
-
-**Parameters**
-
--   `miliseconds` **int** 
-
-### getCurrentTime
-
-getCurrentTime
-
-Returns **int** current time in miliseconds
-
-### getCurrentSpeed
-
-getCurrentSpeed
-
-Returns **int** current relative speed
-
-### isPlaying
-
-isPlaying
-
-Returns **bool** 
-
-### \_updateCurrentTime
-
-\_updateCurrentTime
-
-### setSpeed
-
-setSpeed
-
-**Parameters**
-
--   `speed` **int** relative speed (1 is normal, 2 is double, 0.5 is half)
-
-### addCallback
-
-addCallback
-Add an event listener
-
-**Parameters**
-
--   `event` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
--   `callback`  
-
 ### triggerCallbacks
 
 triggerCallbacks
@@ -170,6 +166,10 @@ triggerCallbacks
 
 -   `event` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** the eventname which will be triggered
 -   `data` **any** data passed to the callbacks
+
+### \_updateCurrentTime
+
+\_updateCurrentTime
 
 ### \_waitForEvent
 
