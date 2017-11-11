@@ -1,3 +1,15 @@
+/**
+ * midi note event
+ * @typedef event
+ * @property {int} channel
+ * @property {int} note
+ * @property {float|undefined} length
+ * @property {float} timestamp
+ * @property {int} track
+ * @property {string} type
+ * @property {int|undefined} velocity
+ */
+
 /** MidiParser
  * parses a midi to an array of formatted events
  * 
