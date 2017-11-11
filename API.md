@@ -39,9 +39,9 @@ loadFromDataUrl
 **Parameters**
 
 -   `midi` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** b64 encoded midi file
--   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21)
+-   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** resolves with an array containing the formatted events
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** resolving with an array containing the formatted events
 
 ### loadFromUint8Array
 
@@ -50,9 +50,9 @@ loadFromUint8Array
 **Parameters**
 
 -   `midi` **[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** uint8 array representing midi file
--   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21)
+-   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** resolves with an array containing the formatted events
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** resolving with an array containing the formatted events
 
 ### loadParsedMidi
 
@@ -61,15 +61,15 @@ loadParsedMidi
 **Parameters**
 
 -   `events` **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** array containing all formatted events
--   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21)
+-   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** returns array containing the formatted events
+Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** containing the formatted events
 
 ### getMidiEvents
 
 getMidiEvents
 
-Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** array containing all loaded events
+Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** containing all loaded events
 
 ### getNextEventsByTime
 
@@ -79,7 +79,7 @@ getNextEventsByTime
 
 -   `miliseconds` **int** specifies the end of the time range
 
-Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** array containing all events which are in the range [currentTime <-> currentTime + miliseconds]
+Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** containing all events which are in the range [currentTime <-> currentTime + miliseconds]
 
 ### getPreviousEventsByTime
 
@@ -89,7 +89,7 @@ getPreviousEventsByTime
 
 -   `miliseconds` **int** specifies the start of the time range
 
-Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** array containing all events which are in the range [currentTime - miliseconds <-> currentTime]
+Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** containing all events which are in the range [currentTime - miliseconds <-> currentTime]
 
 ### getEventsByTimeRange
 
@@ -100,21 +100,18 @@ getEventsByTimeRange
 -   `start` **int** start of the time range in miliseconds
 -   `end` **int** end of the time range in miliseconds
 
-Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** array containing all events which are in the range
+Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** containing all events which are in the time range
 
 ### play
 
-Play
 start playing the parsed midi from the current time
 
 ### pause
 
-pause
 pauses the playing at the current time
 
 ### stop
 
-stop
 pauses the playing and sets the current time to zero
 
 ### setTime
@@ -123,7 +120,7 @@ setTime
 
 **Parameters**
 
--   `miliseconds` **int** sets the current play time
+-   `miliseconds` **int** 
 
 ### getCurrentTime
 
@@ -192,3 +189,45 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 **Parameters**
 
 -   `event`  
+
+## MidiParser
+
+MidiParser
+parses a midi to an array of formatted events
+
+Returns **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** Event format {
+		channel: {int},
+		noteNumber: {int}
+		subtype: {string}
+		timestamp: {int}
+		track: {int}
+		velocity: {int}
+}
+
+## Stream
+
+Note: The following code is an abstracted and slightly adapted version of MIDI.js
+Github link:         <https://github.com/mudcube/MIDI.js>
+
+**Parameters**
+
+-   `str`  
+
+## Stream
+
+Stream
+Wrapper for accessing strings through sequential reads
+
+**Parameters**
+
+-   `str`  
+
+## MidiFile
+
+MidiFile
+class to parse the .mid file format
+(depends on stream.js)
+
+**Parameters**
+
+-   `data`  
