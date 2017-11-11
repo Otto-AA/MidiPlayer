@@ -44,7 +44,7 @@ loadFromDataUrl
 -   `midi` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** b64 encoded midi file
 -   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** resolving with an array containing the formatted [event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;noteEvent>** resolving with an array containing the formatted event
 
 ### loadFromUint8Array
 
@@ -55,7 +55,7 @@ loadFromUint8Array
 -   `midi` **[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** uint8 array representing midi file
 -   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** resolving with an array containing the formatted [event](https://developer.mozilla.org/en-US/docs/Web/API/Event)
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;noteEvent>** resolving with an array containing the formatted event
 
 ### loadParsedMidi
 
@@ -63,10 +63,10 @@ loadParsedMidi
 
 **Parameters**
 
--   `events` **[array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** array containing all formatted events
+-   `events` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** array containing all formatted events
 -   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[event](https://developer.mozilla.org/en-US/docs/Web/API/Event)>** 
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** 
 
 ### addCallback
 
@@ -129,7 +129,7 @@ Returns **bool**
 
 getMidiEvents
 
-Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[event](https://developer.mozilla.org/en-US/docs/Web/API/Event)>** (all loaded events)
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** (all loaded events)
 
 ### getNextEventsByTime
 
@@ -139,7 +139,7 @@ getNextEventsByTime
 
 -   `miliseconds` **int** specifies the end of the time range
 
-Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[event](https://developer.mozilla.org/en-US/docs/Web/API/Event)>** containing all events which are in the range [currentTime <-> currentTime + miliseconds]
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** containing all events which are in the range [currentTime <-> currentTime + miliseconds]
 
 ### getPreviousEventsByTime
 
@@ -149,7 +149,7 @@ getPreviousEventsByTime
 
 -   `miliseconds` **int** specifies the start of the time range
 
-Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[event](https://developer.mozilla.org/en-US/docs/Web/API/Event)>** containing all events which are in the range [currentTime - miliseconds <-> currentTime]
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** containing all events which are in the range [currentTime - miliseconds <-> currentTime]
 
 ### getEventsByTimeRange
 
@@ -160,7 +160,7 @@ getEventsByTimeRange
 -   `start` **int** start of the time range in miliseconds
 -   `end` **int** end of the time range in miliseconds
 
-Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[event](https://developer.mozilla.org/en-US/docs/Web/API/Event)>** containing all events which are in the time range
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** containing all events which are in the time range
 
 ### triggerCallbacks
 

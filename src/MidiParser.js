@@ -1,6 +1,6 @@
 /**
  * midi note event
- * @typedef event
+ * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
  * @property {float|undefined} length
@@ -16,7 +16,7 @@
  * @function parseDataUrl(b64Midi)
  * @function parseUint8(uint8Midi)
  * 
- * @returns {array}
+ * @returns {noteEvent[]}
  * 
  * Event format {
  * 		channel: {int},

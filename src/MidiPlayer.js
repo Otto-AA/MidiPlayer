@@ -2,7 +2,7 @@ import MidiParser from './MidiParser';
 
 /**
  * midi note event
- * @typedef event
+ * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
  * @property {float|undefined} length
@@ -35,7 +35,7 @@ class MidiPlayer {
   /** loadFromDataUrl
    * @param {string}  midi          - b64 encoded midi file
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {Promise}             - resolving with an array containing the formatted {@link event}
+   * @returns {Promise<noteEvent>}             - resolving with an array containing the formatted event
    */
   async loadFromDataUrl(midi, noteShift) {
     return new Promise((resolve, reject) => {
@@ -48,7 +48,7 @@ class MidiPlayer {
   /** loadFromUint8Array
    * @param {Uint8Array}  midi      - uint8 array representing midi file
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {Promise}             - resolving with an array containing the formatted {@link event}
+   * @returns {Promise<noteEvent>}             - resolving with an array containing the formatted event
    */
   async loadFromUint8Array(midi, noteShift) {
     return new Promise((resolve, reject) => {
@@ -59,9 +59,9 @@ class MidiPlayer {
     });
   }
   /** loadParsedMidi
-   * @param {array}   events    - array containing all formatted events
+   * @param {noteEvent[]}   events    - array containing all formatted events
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {event[]}
+   * @returns {noteEvent[]}
    */
   loadParsedMidi(events, noteShift) {
     this._events = events;
@@ -172,7 +172,7 @@ class MidiPlayer {
   }
 
   /** getMidiEvents
-   * @returns {event[]}   - (all loaded events)
+   * @returns {noteEvent[]}   - (all loaded events)
    */
   getMidiEvents() {
     return [...this._playedEvents, ...this._events];
@@ -180,7 +180,7 @@ class MidiPlayer {
 
   /** getNextEventsByTime
    * @param {int} miliseconds   - specifies the end of the time range
-   * @returns {event[]}         - containing all events which are in the range [currentTime <-> currentTime + miliseconds]
+   * @returns {noteEvent[]}         - containing all events which are in the range [currentTime <-> currentTime + miliseconds]
    */
   getNextEventsByTime(miliseconds) {
     return this.getEventsByTimeRange(this._currentTime, this._currentTime + miliseconds);
@@ -188,7 +188,7 @@ class MidiPlayer {
 
   /** getPreviousEventsByTime
    * @param {int} miliseconds   - specifies the start of the time range
-   * @returns {event[]}         - containing all events which are in the range [currentTime - miliseconds <-> currentTime]
+   * @returns {noteEvent[]}         - containing all events which are in the range [currentTime - miliseconds <-> currentTime]
    */
   getPreviousEventsByTime(miliseconds) {
     return this.getEventsByTimeRange(this._currentTime - miliseconds, this._currentTime);
@@ -197,7 +197,7 @@ class MidiPlayer {
   /** getEventsByTimeRange
    * @param {int} start   - start of the time range in miliseconds
    * @param {int} end     - end of the time range in miliseconds
-   * @returns {event[]}   - containing all events which are in the time range
+   * @returns {noteEvent[]}   - containing all events which are in the time range
    */
   getEventsByTimeRange(start, end) {
     const previousEvents = [];
@@ -238,7 +238,7 @@ class MidiPlayer {
   
   /** _waitForEvent
    * Waits until event.timestamp and currentTime are equal
-   * @param {event}  event
+   * @param {noteEvent}  event
    * @returns {Promise}
    */
   _waitForEvent(event) {
@@ -250,7 +250,7 @@ class MidiPlayer {
   }
 
   /** _handleEvent
-   * @param {event} event
+   * @param {noteEvent} event
    */
   _handleEvent(event) {
     this.triggerCallbacks(event.type, event);
