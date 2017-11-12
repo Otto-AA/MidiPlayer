@@ -14,8 +14,8 @@ player.loadFromUint8Array(uint8Midi)
 ## Browser Support
 
 |![Chrome](https://github.com/alrra/browser-logos/raw/master/src/chrome/chrome_48x48.png) | ![Firefox](https://github.com/alrra/browser-logos/raw/master/src/firefox/firefox_48x48.png) | ![Edge](https://github.com/alrra/browser-logos/raw/master/src/edge/edge_48x48.png) | ![Opera](https://github.com/alrra/browser-logos/raw/master/src/opera/opera_48x48.png) | ![Safari](https://github.com/alrra/browser-logos/raw/master/src/safari/safari_48x48.png) |
-|---------|-----------|----------|-----------|--------------|--------------|
-|Latest ✔ | Latest ✔ | Latest ✔ | Latest ✔ | *Not Tested* | *Not Tested* |
+|---------|-----------|----------|--------------|--------------|
+|Latest ✔ | Latest ✔ | Latest ✔ | *Not Tested* | *Not Tested* |
 Feel free to contribute to this list, especially if you can provide info about older versions of the browsers :)
 
 # Documentation
