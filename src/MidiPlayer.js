@@ -1,7 +1,8 @@
 import MidiParser from './MidiParser';
+var Promise = require('es6-promise').Promise;
 
 /**
- * midi note event
+ * noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note

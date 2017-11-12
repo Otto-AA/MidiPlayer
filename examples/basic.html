@@ -21,20 +21,24 @@
         // Load file and start player when a file is given
         var fileReader = new FileReader();
         var midiFileInput = document.getElementById('midiFileInput');
-        midiFileInput.addEventListener('change', inputEvent => {
+        midiFileInput.addEventListener('change', function(inputEvent) {
             if (!inputEvent.target.files.length)
                 return false;
 
             fileReader.readAsArrayBuffer(inputEvent.target.files[0]);
-            fileReader.onload = file => {
+            fileReader.onload = function(file) {
                 var uint8Midi = new Uint8Array(file.target.result);
 
                 // Stop player in case it is already playing
                 player.stop();
                 player.loadFromUint8Array(uint8Midi)
-                    .then(() => {
+                    .then(function() {
                         console.log('Loaded midiPlayer', player.getMidiEvents());
                         player.play();
+                    })
+                    .catch(function(error) {
+                        console.log('An error occured');
+                        console.error(error);
                     });
             };
         });

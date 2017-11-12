@@ -1,5 +1,5 @@
 /**
- * midi note event
+ * noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
