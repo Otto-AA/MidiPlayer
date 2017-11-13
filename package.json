@@ -7,7 +7,12 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo ^G",
+    "build": "webpack",
+    "watch-build": "nodemon -e js -x \"npm run build\""
+  },
+  "nodemonConfig": {
+    "ignore": ["build/*"]
   },
   "repository": {
     "type": "git",
