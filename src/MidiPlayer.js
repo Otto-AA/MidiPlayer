@@ -23,6 +23,7 @@ class MidiPlayer {
     this._playedEvents = [];
     this._currentTime = 0;
     this._speed = 1;
+    this._duration = 0;
     this._callbacks = {
       play: [],
       finish: [],
@@ -72,6 +73,8 @@ class MidiPlayer {
         return event;
       });
     }
+    this._duration = this._events[this._events.length - 1].timestamp;
+
     return this.getMidiEvents();
   }
   
@@ -172,6 +175,13 @@ class MidiPlayer {
     return this._playing;
   }
 
+  /** getDuration
+   * @returns {float} - duration of the midi in miliseconds
+   */
+  getDuration() {
+    return this._duration;
+  }
+
   /** getMidiEvents
    * @returns {noteEvent[]}   - (all loaded events)
    */
@@ -196,32 +206,13 @@ class MidiPlayer {
   }
 
   /** getEventsByTimeRange
-   * @param {int} start   - start of the time range in miliseconds
-   * @param {int} end     - end of the time range in miliseconds
+   * @param {int} startTime   - start of the time range in miliseconds
+   * @param {int} endTime     - end of the time range in miliseconds
    * @returns {noteEvent[]}   - containing all events which are in the time range
    */
-  getEventsByTimeRange(start, end) {
-    const previousEvents = [];
-    const nextEvents = [];
-    const rangeStartTime = start;
-    const rangeEndTime = end;
-    
-    for (let i = this._playedEvents.length - 1; i >= 0; i--) {
-      const event = this._playedEvents[i];
-      if (event.timestamp > rangeStartTime) {
-        previousEvents.unshift(event);
-      } else {
-        break;
-      }
-    }
-    for (const event of this._events) {
-      if (event.timestamp < rangeEndTime) {
-        nextEvents.push(event);
-      } else {
-        break;
-      }
-    }
-    return [...previousEvents, ...nextEvents];
+  getEventsByTimeRange(startTime, endTime) {
+    // Return all elements which are in this time span
+    return [...this._playedEvents, ...this._events].filter(event => startTime <= event.timestamp && event.timestamp <= endTime);
   }
   
   /** triggerCallbacks

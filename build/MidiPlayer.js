@@ -979,6 +979,7 @@ var MidiPlayer = function () {
     this._playedEvents = [];
     this._currentTime = 0;
     this._speed = 1;
+    this._duration = 0;
     this._callbacks = {
       play: [],
       finish: [],
@@ -1080,6 +1081,8 @@ var MidiPlayer = function () {
           return event;
         });
       }
+      this._duration = this._events[this._events.length - 1].timestamp;
+
       return this.getMidiEvents();
     }
 
@@ -1244,6 +1247,16 @@ var MidiPlayer = function () {
       return this._playing;
     }
 
+    /** getDuration
+     * @returns {float} - duration of the midi in miliseconds
+     */
+
+  }, {
+    key: 'getDuration',
+    value: function getDuration() {
+      return this._duration;
+    }
+
     /** getMidiEvents
      * @returns {noteEvent[]}   - (all loaded events)
      */
@@ -1277,57 +1290,18 @@ var MidiPlayer = function () {
     }
 
     /** getEventsByTimeRange
-     * @param {int} start   - start of the time range in miliseconds
-     * @param {int} end     - end of the time range in miliseconds
+     * @param {int} startTime   - start of the time range in miliseconds
+     * @param {int} endTime     - end of the time range in miliseconds
      * @returns {noteEvent[]}   - containing all events which are in the time range
      */
 
   }, {
     key: 'getEventsByTimeRange',
-    value: function getEventsByTimeRange(start, end) {
-      var previousEvents = [];
-      var nextEvents = [];
-      var rangeStartTime = start;
-      var rangeEndTime = end;
-
-      for (var i = this._playedEvents.length - 1; i >= 0; i--) {
-        var event = this._playedEvents[i];
-        if (event.timestamp > rangeStartTime) {
-          previousEvents.unshift(event);
-        } else {
-          break;
-        }
-      }
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this._events[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var _event = _step.value;
-
-          if (_event.timestamp < rangeEndTime) {
-            nextEvents.push(_event);
-          } else {
-            break;
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      return [].concat(previousEvents, nextEvents);
+    value: function getEventsByTimeRange(startTime, endTime) {
+      // Return all elements which are in this time span
+      return [].concat((0, _toConsumableArray3.default)(this._playedEvents), (0, _toConsumableArray3.default)(this._events)).filter(function (event) {
+        return startTime <= event.timestamp && event.timestamp <= endTime;
+      });
     }
 
     /** triggerCallbacks

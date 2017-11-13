@@ -63,6 +63,7 @@ Feel free to contribute to this list, especially if you can provide info about o
     -   [setSpeed](#setspeed)
     -   [getCurrentSpeed](#getcurrentspeed)
     -   [isPlaying](#isplaying)
+    -   [getDuration](#getduration)
     -   [getMidiEvents](#getmidievents)
     -   [getNextEventsByTime](#getnexteventsbytime)
     -   [getPreviousEventsByTime](#getpreviouseventsbytime)
@@ -71,7 +72,7 @@ Feel free to contribute to this list, especially if you can provide info about o
 
 ## MidiPlayer
 
-midi note event
+noteEvent
 
 **Properties**
 
@@ -172,6 +173,12 @@ Returns **int** current relative speed
 isPlaying
 
 Returns **bool** 
+
+### getDuration
+
+getDuration
+
+Returns **float** duration of the midi in miliseconds
 
 ### getMidiEvents
 
