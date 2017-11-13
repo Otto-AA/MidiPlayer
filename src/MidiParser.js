@@ -92,58 +92,52 @@ class MidiParser {
 
 export default MidiParser;
 
-/** Note: The following code is an abstracted and slightly adapted version of MIDI.js
+/* Note: The following code is an abstracted and slightly adapted version of MIDI.js
  * Github link:         https://github.com/mudcube/MIDI.js
  */
 
 /** Stream
  * Wrapper for accessing strings through sequential reads
  */
-function Stream(str) {
-    let position = 0;
-
-    function read(length) {
-        let result = str.substr(position, length);
-        position += length;
+class Stream {
+    constructor(str) {
+        this.str = str;
+        this.position = 0;
+    }
+    read(length) {
+        const result = this.str.substr(this.position, length);
+        this.position += length;
         return result;
     }
-
-    /* read a big-endian 32-bit integer */
-    function readInt32() {
-        let result = (
-            (str.charCodeAt(position) << 24) + (str.charCodeAt(position + 1) << 16) + (str.charCodeAt(position + 2) << 8) + str.charCodeAt(position + 3));
-        position += 4;
+    readInt32() {
+        const result = (
+            (this.str.charCodeAt(this.position) << 24) + (this.str.charCodeAt(this.position + 1) << 16) + (this.str.charCodeAt(this.position + 2) << 8) + this.str.charCodeAt(this.position + 3));
+        this.position += 4;
         return result;
     }
-
-    /* read a big-endian 16-bit integer */
-    function readInt16() {
-        let result = (
-            (str.charCodeAt(position) << 8) + str.charCodeAt(position + 1));
-        position += 2;
+    readInt16() {
+        const result = (
+            (this.str.charCodeAt(this.position) << 8) + this.str.charCodeAt(this.position + 1));
+        this.position += 2;
         return result;
     }
-
-    /* read an 8-bit integer */
-    function readInt8(signed) {
-        let result = str.charCodeAt(position);
+    readInt8(signed) {
+        let result = this.str.charCodeAt(this.position);
         if (signed && result > 127) result -= 256;
-        position += 1;
+        this.position += 1;
         return result;
     }
-
-    function eof() {
-        return position >= str.length;
-    }
-
-    /* read a MIDI-style letiable-length integer
-    	(big-endian value in groups of 7 bits,
-    	with top bit set to signify that another byte follows)
+    eof() {
+        return this.position >= this.str.length;
+    }    
+    /*  read a MIDI-style letiable-length integer
+        (big-endian value in groups of 7 bits,
+        with top bit set to signify that another byte follows)
     */
-    function readletInt() {
+    readletInt() {
         let result = 0;
         while (true) {
-            let b = readInt8();
+            const b = this.readInt8();
             if (b & 0x80) {
                 result += (b & 0x7f);
                 result <<= 7;
@@ -153,16 +147,8 @@ function Stream(str) {
             }
         }
     }
-
-    return {
-        'eof': eof,
-        'read': read,
-        'readInt32': readInt32,
-        'readInt16': readInt16,
-        'readInt8': readInt8,
-        'readletInt': readletInt
-    }
 }
+
 /** MidiFile
 class to parse the .mid file format
 (depends on stream.js)
@@ -361,12 +347,12 @@ function MidiFile(data) {
         }
     }
 
-    let stream = Stream(data);
+    let stream = new Stream(data);
     let headerChunk = readChunk(stream);
     if (headerChunk.id != 'MThd' || headerChunk.length != 6) {
         throw "Bad .mid file - header not found";
     }
-    const headerStream = Stream(headerChunk.data);
+    const headerStream = new Stream(headerChunk.data);
     const formatType = headerStream.readInt16();
     const trackCount = headerStream.readInt16();
     const timeDivision = headerStream.readInt16();
@@ -388,7 +374,7 @@ function MidiFile(data) {
         if (trackChunk.id != 'MTrk') {
             throw "Unexpected chunk - expected MTrk, got " + trackChunk.id;
         }
-        let trackStream = Stream(trackChunk.data);
+        let trackStream = new Stream(trackChunk.data);
         while (!trackStream.eof()) {
             let event = readEvent(trackStream);
             tracks[i].push(event);

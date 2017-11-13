@@ -3301,7 +3301,7 @@ var MidiParser = function () {
 
 exports.default = MidiParser;
 
-/** Note: The following code is an abstracted and slightly adapted version of MIDI.js
+/* Note: The following code is an abstracted and slightly adapted version of MIDI.js
  * Github link:         https://github.com/mudcube/MIDI.js
  */
 
@@ -3309,72 +3309,78 @@ exports.default = MidiParser;
  * Wrapper for accessing strings through sequential reads
  */
 
-function Stream(str) {
-    var position = 0;
+var Stream = function () {
+    function Stream(str) {
+        (0, _classCallCheck3.default)(this, Stream);
 
-    function read(length) {
-        var result = str.substr(position, length);
-        position += length;
-        return result;
+        this.str = str;
+        this.position = 0;
     }
 
-    /* read a big-endian 32-bit integer */
-    function readInt32() {
-        var result = (str.charCodeAt(position) << 24) + (str.charCodeAt(position + 1) << 16) + (str.charCodeAt(position + 2) << 8) + str.charCodeAt(position + 3);
-        position += 4;
-        return result;
-    }
+    (0, _createClass3.default)(Stream, [{
+        key: 'read',
+        value: function read(length) {
+            var result = this.str.substr(this.position, length);
+            this.position += length;
+            return result;
+        }
+    }, {
+        key: 'readInt32',
+        value: function readInt32() {
+            var result = (this.str.charCodeAt(this.position) << 24) + (this.str.charCodeAt(this.position + 1) << 16) + (this.str.charCodeAt(this.position + 2) << 8) + this.str.charCodeAt(this.position + 3);
+            this.position += 4;
+            return result;
+        }
+    }, {
+        key: 'readInt16',
+        value: function readInt16() {
+            var result = (this.str.charCodeAt(this.position) << 8) + this.str.charCodeAt(this.position + 1);
+            this.position += 2;
+            return result;
+        }
+    }, {
+        key: 'readInt8',
+        value: function readInt8(signed) {
+            var result = this.str.charCodeAt(this.position);
+            if (signed && result > 127) result -= 256;
+            this.position += 1;
+            return result;
+        }
+    }, {
+        key: 'eof',
+        value: function eof() {
+            return this.position >= this.str.length;
+        }
+        /*  read a MIDI-style letiable-length integer
+            (big-endian value in groups of 7 bits,
+            with top bit set to signify that another byte follows)
+        */
 
-    /* read a big-endian 16-bit integer */
-    function readInt16() {
-        var result = (str.charCodeAt(position) << 8) + str.charCodeAt(position + 1);
-        position += 2;
-        return result;
-    }
-
-    /* read an 8-bit integer */
-    function readInt8(signed) {
-        var result = str.charCodeAt(position);
-        if (signed && result > 127) result -= 256;
-        position += 1;
-        return result;
-    }
-
-    function eof() {
-        return position >= str.length;
-    }
-
-    /* read a MIDI-style letiable-length integer
-    	(big-endian value in groups of 7 bits,
-    	with top bit set to signify that another byte follows)
-    */
-    function readletInt() {
-        var result = 0;
-        while (true) {
-            var b = readInt8();
-            if (b & 0x80) {
-                result += b & 0x7f;
-                result <<= 7;
-            } else {
-                /* b is the last byte */
-                return result + b;
+    }, {
+        key: 'readletInt',
+        value: function readletInt() {
+            var result = 0;
+            while (true) {
+                var b = this.readInt8();
+                if (b & 0x80) {
+                    result += b & 0x7f;
+                    result <<= 7;
+                } else {
+                    /* b is the last byte */
+                    return result + b;
+                }
             }
         }
-    }
+    }]);
+    return Stream;
+}();
 
-    return {
-        'eof': eof,
-        'read': read,
-        'readInt32': readInt32,
-        'readInt16': readInt16,
-        'readInt8': readInt8,
-        'readletInt': readletInt
-    };
-}
 /** MidiFile
 class to parse the .mid file format
 (depends on stream.js)
 */
+
+
 function MidiFile(data) {
     function readChunk(stream) {
         var id = stream.read(4);
@@ -3567,12 +3573,12 @@ function MidiFile(data) {
         }
     }
 
-    var stream = Stream(data);
+    var stream = new Stream(data);
     var headerChunk = readChunk(stream);
     if (headerChunk.id != 'MThd' || headerChunk.length != 6) {
         throw "Bad .mid file - header not found";
     }
-    var headerStream = Stream(headerChunk.data);
+    var headerStream = new Stream(headerChunk.data);
     var formatType = headerStream.readInt16();
     var trackCount = headerStream.readInt16();
     var timeDivision = headerStream.readInt16();
@@ -3594,7 +3600,7 @@ function MidiFile(data) {
         if (trackChunk.id != 'MTrk') {
             throw "Unexpected chunk - expected MTrk, got " + trackChunk.id;
         }
-        var trackStream = Stream(trackChunk.data);
+        var trackStream = new Stream(trackChunk.data);
         while (!trackStream.eof()) {
             var event = readEvent(trackStream);
             tracks[i].push(event);
