@@ -1,5 +1,6 @@
-/**
- * noteEvent
+import base64 from './base64';
+
+/** noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
@@ -30,7 +31,7 @@
 
 class MidiParser {
     parseDataUrl(dataUrl) {
-        const data = window.atob(dataUrl.split(',')[1]);
+        const data = base64.atob(dataUrl.split(',')[1]);
         try {
             const midiFile = MidiFile(data);
             const replayer = new Replayer(midiFile);
@@ -42,7 +43,7 @@ class MidiParser {
         }
     }
     parseUint8(midi) {
-        const b64encoded = 'data:audio/mid;base64,' + btoa(String.fromCharCode.apply(null, midi));
+        const b64encoded = 'data:audio/mid;base64,' + base64.btoa(String.fromCharCode.apply(null, midi));
         return this.parseDataUrl(b64encoded);
     }
     _formatReplayerData(midiData) {

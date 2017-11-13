@@ -7,12 +7,15 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo ^G",
+    "test": "mocha test/*.js",
     "build": "webpack",
-    "watch-build": "nodemon -e js -x \"npm run build\""
+    "watch-build": "nodemon -e js -x \"npm run build\"",
+    "watch-test": "nodemon -e js -x \"npm run test\""
   },
   "nodemonConfig": {
-    "ignore": ["build/*"]
+    "ignore": [
+      "build/*"
+    ]
   },
   "repository": {
     "type": "git",
@@ -31,7 +34,8 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1"
+    "babel-preset-env": "^1.6.1",
+    "mocha": "^4.0.1"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0"

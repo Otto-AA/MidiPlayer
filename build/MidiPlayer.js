@@ -952,7 +952,7 @@ var _MidiParser2 = _interopRequireDefault(_MidiParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Promise = __webpack_require__(93).Promise;
+var Promise = __webpack_require__(94).Promise;
 
 /**
  * noteEvent
@@ -3195,10 +3195,13 @@ var _createClass2 = __webpack_require__(44);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
+var _base = __webpack_require__(93);
+
+var _base2 = _interopRequireDefault(_base);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * noteEvent
+/** noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
@@ -3235,7 +3238,7 @@ var MidiParser = function () {
     (0, _createClass3.default)(MidiParser, [{
         key: 'parseDataUrl',
         value: function parseDataUrl(dataUrl) {
-            var data = window.atob(dataUrl.split(',')[1]);
+            var data = _base2.default.atob(dataUrl.split(',')[1]);
             try {
                 var midiFile = MidiFile(data);
                 var replayer = new Replayer(midiFile);
@@ -3249,7 +3252,7 @@ var MidiParser = function () {
     }, {
         key: 'parseUint8',
         value: function parseUint8(midi) {
-            var b64encoded = 'data:audio/mid;base64,' + btoa(String.fromCharCode.apply(null, midi));
+            var b64encoded = 'data:audio/mid;base64,' + _base2.default.btoa(String.fromCharCode.apply(null, midi));
             return this.parseDataUrl(b64encoded);
         }
     }, {
@@ -3804,6 +3807,71 @@ exports.f = {}.propertyIsEnumerable;
 /* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/* base64 polyfill
+ * adapted version of https://github.com/davidchambers/Base64.js/blob/master/base64.js
+ */
+
+function InvalidCharacterError(message) {
+    this.message = message;
+}
+InvalidCharacterError.prototype = new Error();
+InvalidCharacterError.prototype.name = 'InvalidCharacterError';
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+var b64 = {};
+b64.btoa = function (input) {
+    var str = String(input);
+    for (
+    // initialize result and counter
+    var block, charCode, idx = 0, map = chars, output = '';
+    // if the next str index does not exist:
+    //   change the mapping table to "="
+    //   check if d has no fractional digits
+    str.charAt(idx | 0) || (map = '=', idx % 1);
+    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+    output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
+        charCode = str.charCodeAt(idx += 3 / 4);
+        if (charCode > 0xFF) {
+            throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+        }
+        block = block << 8 | charCode;
+    }
+    return output;
+};
+b64.atob = function (input) {
+    var str = String(input).replace(/[=]+$/, ''); // #31: ExtendScript bad parse of /=
+    if (str.length % 4 == 1) {
+        throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+    }
+    for (
+    // initialize result and counters
+    var bc = 0, bs, buffer, idx = 0, output = '';
+    // get next character
+    buffer = str.charAt(idx++);
+    // character found in table? initialize bit storage and add its ascii value;
+    ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
+    // and if not first of each 4 characters,
+    // convert the first 8 bits to one ascii character
+    bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
+        // try to find character in table (0-63, not found => -1)
+        buffer = chars.indexOf(buffer);
+    }
+    return output;
+};
+
+exports.default = b64;
+module.exports = exports['default'];
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports, __webpack_require__) {
+
 /* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
@@ -3941,7 +4009,7 @@ function flush() {
 function attemptVertx() {
   try {
     var r = require;
-    var vertx = __webpack_require__(96);
+    var vertx = __webpack_require__(97);
     vertxNext = vertx.runOnLoop || vertx.runOnContext;
     return useVertxTimer();
   } catch (e) {
@@ -4962,10 +5030,10 @@ return Promise$2;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(94), __webpack_require__(95)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(95), __webpack_require__(96)))
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -5155,7 +5223,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports) {
 
 var g;
@@ -5182,7 +5250,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
