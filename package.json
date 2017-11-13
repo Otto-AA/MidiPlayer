@@ -7,7 +7,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "mocha test/*.js",
+    "test": "mocha",
     "build": "webpack",
     "watch-build": "nodemon -e js -x \"npm run build\"",
     "watch-test": "nodemon -e js -x \"npm run test\""
