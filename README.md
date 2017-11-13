@@ -18,7 +18,7 @@ Download the files in [src](./src) and import the MidiPlayer as follows:
 
 ```javascript
 import MidiPlayer from './path/to/src/MidiPlayer';
-cost player = new MidiPlayer();
+const player = new MidiPlayer();
 // player.loadFromDataUrl...
 ```
 
