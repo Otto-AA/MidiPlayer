@@ -12,7 +12,7 @@ player.loadFromUint8Array(uint8Midi)
 ```
 
 # Usage
-## Using ES6  `import`:
+#### Using ES6  `import`:
 
 Download the files in [src](./src) and import the MidiPlayer as follows:
 
@@ -22,7 +22,7 @@ cost player = new MidiPlayer();
 // player.loadFromDataUrl...
 ```
 
-### Using `<script>`
+#### Using `<script>`
 Download [MidiPlayer.js](./build/MidiPlayer.js) from [build](./build).
 
 In your html:
