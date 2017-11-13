@@ -11,6 +11,32 @@ player.loadFromUint8Array(uint8Midi)
     .then(function() { player.play(); });
 ```
 
+## Usage
+#### Using ES6  `import`:
+
+Download the files in [src](./src) and import the MidiPlayer as follows:
+
+```javascript
+import MidiPlayer from './path/to/src/MidiPlayer';
+const player = new MidiPlayer();
+// player.loadFromDataUrl...
+```
+
+#### Using `<script>`
+Download [MidiPlayer.js](./build/MidiPlayer.js) from [build](./build).
+
+In your html:
+```html
+<script type="application/javascript" src="./path/to/midiplayer/MidiPlayer.js"></script>
+<script type="application/javascript" src="myScript.js"></script>
+```
+In *myScript.js*:
+```javascript
+var player = new MidiPlayer();
+// player.loadFromDataUrl...
+```
+
+
 ## Browser Support
 
 |![Chrome](https://github.com/alrra/browser-logos/raw/master/src/chrome/chrome_48x48.png) | ![Firefox](https://github.com/alrra/browser-logos/raw/master/src/firefox/firefox_48x48.png) | ![Edge](https://github.com/alrra/browser-logos/raw/master/src/edge/edge_48x48.png) | ![Opera](https://github.com/alrra/browser-logos/raw/master/src/opera/opera_48x48.png) | ![Safari](https://github.com/alrra/browser-logos/raw/master/src/safari/safari_48x48.png) |
