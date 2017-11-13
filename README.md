@@ -1,7 +1,7 @@
 # MidiPlayer
 Providing a simple interface to read and visualize midi files with javascript. It is based on [MIDI.js](https://github.com/mudcube/MIDI.js) by [mudcube](https://github.com/mudcube). If you also want to play sounds you should check it out.
 
-## Basic Example
+# Basic Example
 This example demonstrates the basic usage of MidiPlayer. You can also view a [complete example](./examples/basic.html) and its [live demo](https://htmlpreview.github.io/?https://github.com/Otto-AA/MidiPlayer/blob/master/examples/basic.html)
 ```javascript
 var player = new MidiPlayer();
@@ -11,18 +11,18 @@ player.loadFromUint8Array(uint8Midi)
     .then(function() { player.play(); });
 ```
 
-## Usage
-#### Using ES6  `import`:
+# Usage
+## Using ES6  `import`:
 
 Download the files in [src](./src) and import the MidiPlayer as follows:
 
 ```javascript
 import MidiPlayer from './path/to/src/MidiPlayer';
-const player = new MidiPlayer();
+cost player = new MidiPlayer();
 // player.loadFromDataUrl...
 ```
 
-#### Using `<script>`
+### Using `<script>`
 Download [MidiPlayer.js](./build/MidiPlayer.js) from [build](./build).
 
 In your html:
@@ -37,7 +37,7 @@ var player = new MidiPlayer();
 ```
 
 
-## Browser Support
+# Browser Support
 
 |![Chrome](https://github.com/alrra/browser-logos/raw/master/src/chrome/chrome_48x48.png) | ![Firefox](https://github.com/alrra/browser-logos/raw/master/src/firefox/firefox_48x48.png) | ![Edge](https://github.com/alrra/browser-logos/raw/master/src/edge/edge_48x48.png) | ![Opera](https://github.com/alrra/browser-logos/raw/master/src/opera/opera_48x48.png) | ![Safari](https://github.com/alrra/browser-logos/raw/master/src/safari/safari_48x48.png) |
 |---------|-----------|----------|--------------|--------------|
