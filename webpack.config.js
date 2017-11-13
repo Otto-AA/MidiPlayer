@@ -1,6 +1,36 @@
 const path = require('path');
 
- module.exports = [
+const defaultModule = {
+	loaders: [{
+		test: /\.js$/,
+		exclude: /node_modules/,
+		loader: 'babel-loader',
+		query: {
+		presets: [['env', {
+			targets: {
+				browsers: ['last 2 versions', '> 1%']
+			}
+		}]],
+		plugins: [
+			'add-module-exports',
+			'transform-object-rest-spread',
+			['transform-runtime', {
+				polyfill: false,
+				regenerator: true
+			}]
+		]
+		}
+	}]
+};
+const defaultResolve = {
+	modules: [
+		path.resolve('./'),
+		path.resolve('./node_modules')
+	]
+};
+
+// Export MidiPlayer and MidiParser as libraries
+module.exports = [
 	{
 		entry: {
 			'build/MidiPlayer': './src/MidiPlayer.js'
@@ -11,30 +41,8 @@ const path = require('path');
 			library: 'MidiPlayer',
 			libraryTarget: 'umd'
 		},
-		module: {
-			loaders: [{
-				test: /\.js$/,
-				exclude: /node_modules/,
-				loader: 'babel-loader',
-				query: {
-				presets: ['env'],
-				plugins: [
-					'add-module-exports',
-					'transform-object-rest-spread',
-					['transform-runtime', {
-						polyfill: false,
-						regenerator: true
-					}]
-				]
-				}
-			}]
-		},
-		resolve: {
-			modules: [
-				path.resolve('./'),
-				path.resolve('./node_modules')
-			]
-		}
+		module: defaultModule,
+		resolve: defaultResolve
 	},
 	{
 		entry: {
@@ -46,29 +54,7 @@ const path = require('path');
 			library: 'MidiParser',
 			libraryTarget: 'umd'
 		},
-		module: {
-			loaders: [{
-				test: /\.js$/,
-				exclude: /node_modules/,
-				loader: 'babel-loader',
-				query: {
-				presets: ['env'],
-				plugins: [
-					'add-module-exports',
-					'transform-object-rest-spread',
-					['transform-runtime', {
-						polyfill: false,
-						regenerator: true
-					}]
-				]
-				}
-			}]
-		},
-		resolve: {
-			modules: [
-				path.resolve('./'),
-				path.resolve('./node_modules')
-			]
-		}
+		module: defaultModule,
+		resolve: defaultResolve
 	}
 ];
