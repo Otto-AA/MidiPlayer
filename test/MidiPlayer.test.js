@@ -67,4 +67,59 @@ describe('MidiPlayer', function() {
             assert.deepEqual(midiPlayer.getEventsByTimeRange(start, end), testData.events);
         });
     });
+
+    describe('callbacks', function() {
+        before('load player data', function(done) {
+            midiPlayer.loadFromDataUrl(testData.dataUrl)
+                .then(() => done())
+                .catch(done);
+        });
+        beforeEach('restore player', function() {
+            midiPlayer.removeCallbacks();
+            midiPlayer.stop();
+            midiPlayer.setSpeed(1);
+        });
+
+        const oneTimeTrigger = function(callback) {
+            return () => {
+                callback();
+                callback = () => {};
+            };
+        };
+
+        it('should trigger play on play', function(done) {
+            midiPlayer.addCallback('play', () => done());
+            midiPlayer.play();
+        });
+        it('should trigger noteOn within the first few seconds', function(done) {
+            const doneTriggerOnce = oneTimeTrigger(done);
+            midiPlayer.addCallback('noteOn', () => doneTriggerOnce());
+            midiPlayer.play();
+        });
+        it('should trigger noteOff within the first few seconds', function(done) {
+            const doneTriggerOnce = oneTimeTrigger(done);
+            midiPlayer.addCallback('noteOff', () => doneTriggerOnce());
+            midiPlayer.play();
+        });
+        it('should trigger pause on pause', function(done) {
+            midiPlayer.addCallback('pause', () => done());
+            midiPlayer.play();
+            midiPlayer.pause();
+        });
+        it('should trigger pause on stop', function(done) {
+            midiPlayer.addCallback('pause', () => done());
+            midiPlayer.play();
+            midiPlayer.stop();
+        });
+        it('should trigger stop on stop', function(done) {
+            midiPlayer.addCallback('stop', () => done());
+            midiPlayer.play();
+            midiPlayer.stop();
+        });
+        it('should trigger finish at the end', function(done) {
+            midiPlayer.addCallback('finish', () => done());
+            midiPlayer.setTime(midiPlayer.getDuration() - 1000);
+            midiPlayer.play();
+        });
+    });
 });
