@@ -9,9 +9,9 @@
   "scripts": {
     "test": "mocha",
     "build": "webpack",
-    "watch-build": "nodemon -e js -x \"npm run build\"",
-    "watch-test": "nodemon -e js -x \"npm run delay -- 3000 & npm run test\"",
-    "//": "delay -- 3000 is used to start the tests after the build is done. This can vary on different computers",
+    "watch:build": "nodemon --watch ./src -x \"npm run build\"",
+    "watch:test": "nodemon -x \"npm run delay -- 1500 & npm run test\"",
+    "//": "delay -- 1500 is used to start the tests after the build is done. This can vary on different computers",
     "delay": "node ./node_modules/npm-delay"
   },
   "nodemonConfig": {
