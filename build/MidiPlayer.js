@@ -1110,7 +1110,7 @@ var MidiPlayer = function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                this._startingTime = new Date().getTime() - this._currentTime;
+                this._startingTime = new Date().getTime() - this.getCurrentTime() / this.getCurrentSpeed();
                 this._playing = true;
 
                 this.triggerCallbacks('play');
@@ -1224,6 +1224,9 @@ var MidiPlayer = function () {
   }, {
     key: 'setSpeed',
     value: function setSpeed(speed) {
+      if (isNaN(speed) || speed <= 0) {
+        throw new Error('speed must be a positive number', speed);
+      }
       this._speed = speed;
     }
 
@@ -1322,7 +1325,7 @@ var MidiPlayer = function () {
   }, {
     key: '_updateCurrentTime',
     value: function _updateCurrentTime() {
-      this._currentTime = (new Date().getTime() - this._startingTime) * this._speed;
+      this._currentTime = (new Date().getTime() - this._startingTime) * this.getCurrentSpeed();
     }
 
     /** _waitForEvent
@@ -1336,7 +1339,7 @@ var MidiPlayer = function () {
     value: function _waitForEvent(event) {
       this._currentTime = this.getCurrentTime();
       var deltaTime = event.timestamp - this._currentTime;
-      var timeToWait = deltaTime / this._speed;
+      var timeToWait = deltaTime / this.getCurrentSpeed();
 
       return new Promise(function (resolve) {
         return setTimeout(resolve, timeToWait);

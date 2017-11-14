@@ -90,7 +90,7 @@ class MidiPlayer {
    * @description start playing the parsed midi from the current time
    */
   async play() {
-    this._startingTime = (new Date()).getTime() - this._currentTime;
+    this._startingTime = (new Date()).getTime() - this.getCurrentTime() / this.getCurrentSpeed();
     this._playing = true;
     
     this.triggerCallbacks('play');
@@ -158,6 +158,9 @@ class MidiPlayer {
    * @param {int} speed   - relative speed (1 is normal, 2 is double, 0.5 is half)
    */
   setSpeed(speed) {
+    if (isNaN(speed) || speed <= 0) {
+      throw new Error('speed must be a positive number', speed);
+    }
     this._speed = speed;
   }
 
@@ -225,7 +228,7 @@ class MidiPlayer {
 
   /** _updateCurrentTime */
   _updateCurrentTime() {
-    this._currentTime = ((new Date()).getTime() - this._startingTime) * this._speed;
+    this._currentTime = ((new Date()).getTime() - this._startingTime) * this.getCurrentSpeed();
   }
   
   /** _waitForEvent
@@ -236,7 +239,7 @@ class MidiPlayer {
   _waitForEvent(event) {
     this._currentTime = this.getCurrentTime();
     const deltaTime = event.timestamp - this._currentTime;
-    const timeToWait = deltaTime / this._speed;
+    const timeToWait = deltaTime / this.getCurrentSpeed();
     
     return new Promise(resolve => setTimeout(resolve, timeToWait));
   }
