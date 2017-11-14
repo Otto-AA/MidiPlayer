@@ -118,7 +118,7 @@ describe('MidiPlayer', function() {
         });
         it('should trigger finish at the end', function(done) {
             midiPlayer.addCallback('finish', () => done());
-            midiPlayer.setTime(midiPlayer.getDuration() - 1000);
+            midiPlayer.setTime(midiPlayer.getDuration() - 500);
             midiPlayer.play();
         });
     });
