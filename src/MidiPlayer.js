@@ -114,8 +114,10 @@ class MidiPlayer {
    * @description pauses the playing at the current time
    */
   pause() {
-    this._playing = false;
-    this.triggerCallbacks('pause');
+    if (this.isPlaying()) {
+      this._playing = false;
+      this.triggerCallbacks('pause');
+    }
   }
 
   /** stop
@@ -224,6 +226,13 @@ class MidiPlayer {
    */
   triggerCallbacks(event, data) {
     this._callbacks[event].forEach(callback => callback(data));
+  }
+
+  /** removeCallbacks  */
+  removeCallbacks() {
+    for (const key in this._callbacks) {
+      this._callbacks[key] = [];
+    }
   }
 
   /** _updateCurrentTime */

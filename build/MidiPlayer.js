@@ -1168,8 +1168,10 @@ var MidiPlayer = function () {
   }, {
     key: 'pause',
     value: function pause() {
-      this._playing = false;
-      this.triggerCallbacks('pause');
+      if (this.isPlaying()) {
+        this._playing = false;
+        this.triggerCallbacks('pause');
+      }
     }
 
     /** stop
@@ -1318,6 +1320,16 @@ var MidiPlayer = function () {
       this._callbacks[event].forEach(function (callback) {
         return callback(data);
       });
+    }
+
+    /** removeCallbacks  */
+
+  }, {
+    key: 'removeCallbacks',
+    value: function removeCallbacks() {
+      for (var key in this._callbacks) {
+        this._callbacks[key] = [];
+      }
     }
 
     /** _updateCurrentTime */
