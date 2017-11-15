@@ -1,5 +1,5 @@
 # MidiPlayer
-Providing a simple interface to read and visualize midi files with javascript. It is based on [MIDI.js](https://github.com/mudcube/MIDI.js) by [mudcube](https://github.com/mudcube). 
+Providing a simple interface to read and visualize midi files with javascript. It is based on [jasmid](https://github.com/gasman/jasmid) by [gasman](https://github.com/gasman). 
 
 Other resources you might want to use in combination with this MidiPlayer are listed [here](#additional-resources). If you feel like something is missing, you can create a feature request in the [issues section](https://github.com/Otto-AA/MidiPlayer/issues) and I will try to answer as soon as possible.
 
