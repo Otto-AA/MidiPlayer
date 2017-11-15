@@ -1,7 +1,7 @@
 # MidiPlayer
 Providing a simple interface to read and visualize midi files with javascript. It is based on [jasmid](https://github.com/gasman/jasmid) by [gasman](https://github.com/gasman). 
 
-Other resources you might want to use in combination with this MidiPlayer are listed [here](#additional-resources). If you feel like something is missing, you can create a feature request in the [issues section](https://github.com/Otto-AA/MidiPlayer/issues) and I will try to answer as soon as possible.
+Other resources you might want to use in combination with this MidiPlayer are listed [here](#additional-resources). If you feel like some functionality is missing, you can create a feature request in the [issues section](https://github.com/Otto-AA/MidiPlayer/issues) and I will try to answer as soon as possible.
 
 # Basic Example
 This example demonstrates the basic usage of MidiPlayer. You can also view a [complete example](./examples/basic.html) and its [live demo](https://htmlpreview.github.io/?https://github.com/Otto-AA/MidiPlayer/blob/master/examples/basic.html)
