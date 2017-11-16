@@ -200,6 +200,16 @@ describe('MidiPlayer', function() {
                 ];
                 assert.deepEqual(midiPlayer.getMidiEvents(), expectedResult);
             });
+            it('double reverse should equal original', function() {
+                midiPlayer.addEvent({timestamp: 0, note: 20, type: 'noteOn', length: 250});
+                midiPlayer.addEvent({timestamp: 250, note: 20, type: 'noteOff'});
+                midiPlayer.addEvent({timestamp: 1000, note: 50, type: 'noteOn', length: 100});
+                midiPlayer.addEvent({timestamp: 1100, note: 50, type: 'noteOff'});
+                const originalMidiData = midiPlayer.getMidiEvents();
+                midiPlayer.reverseMidiData();
+                midiPlayer.reverseMidiData();
+                assert.deepEqual(midiPlayer.getMidiEvents(), originalMidiData);
+            });
         });
     });
 });
