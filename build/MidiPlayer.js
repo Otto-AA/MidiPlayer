@@ -1074,6 +1074,8 @@ var MidiPlayer = function () {
   }, {
     key: 'loadParsedMidi',
     value: function loadParsedMidi(events, noteShift) {
+      this.reset();
+
       this._events = events;
       if (noteShift) {
         this._events = this._events.map(function (event) {
@@ -1081,7 +1083,7 @@ var MidiPlayer = function () {
           return event;
         });
       }
-      this._duration = this._events[this._events.length - 1].timestamp;
+      this._updateDuration();
 
       return this.getMidiEvents();
     }
@@ -1186,6 +1188,18 @@ var MidiPlayer = function () {
       this.triggerCallbacks('stop');
     }
 
+    /** reset
+     * @description stops the player and removes all events
+     */
+
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this.stop();
+      this.removeCallbacks();
+      this.removeEvents({});
+    }
+
     /** setTime
      * @param {int} miliseconds
      */
@@ -1197,7 +1211,7 @@ var MidiPlayer = function () {
       while (this._events.length && miliseconds > this._events[0].timestamp) {
         this._playedEvents.push(this._events.shift());
       }
-      while (this._playedEvents.length && miliseconds < this._playedEvents[this._playedEvents.length - 1].timestamp) {
+      while (this._playedEvents.length && miliseconds <= this._playedEvents[this._playedEvents.length - 1].timestamp) {
         this._events.unshift(this._playedEvents.pop());
       }
       // Set the current time    
@@ -1332,11 +1346,95 @@ var MidiPlayer = function () {
       }
     }
 
-    // /** addEvent
-    //  * @param {noteEvent} event
-    //  */
-    // addEvent(event) {
-    // }
+    /** addEvent
+     * @param {noteEvent} event - must contain: timestamp, note, type [, optional properties]
+     */
+
+  }, {
+    key: 'addEvent',
+    value: function addEvent(newEvent) {
+      // Check if required properties are given
+      if (!newEvent.hasOwnProperty('timestamp') || !newEvent.hasOwnProperty('note') || !newEvent.hasOwnProperty('type')) {
+        throw new Error('Couldn\'t add event because not all neccessary properties where specifed');
+      }
+
+      var eventArray = newEvent.timestamp > this.getCurrentTime() ? this._events : this._playedEvents;
+      var location = locationOf(newEvent, eventArray, function (a, b) {
+        return a.timestamp - b.timestamp;
+      });
+      if (newEvent.timestamp > this.getCurrentTime()) {
+        this._events.splice(location, 0, newEvent);
+      } else {
+        this._playedEvents.splice(location, 0, newEvent);
+      }
+      this._updateDuration();
+    }
+
+    /* Create test data
+    player.addEvent({timestamp: 5, note: 40, type: 'noteOn', length: 55});
+    player.addEvent({timestamp: 60, note: 40, type: 'noteOff'});
+    player.addEvent({timestamp: 100, note: 41, type: 'noteOn', length: 100});
+    player.addEvent({timestamp: 200, note: 41, type: 'noteOff'});
+    
+    /** removeEvents
+     * @description removes all events with have the same keys and properties as the search
+     * @param {object}  search - e.g. {note: 40, type: 'noteOff'} or {timestamp: 500}
+     */
+
+  }, {
+    key: 'removeEvents',
+    value: function removeEvents(search) {
+      // objContainsObj
+      // checks if the original object has all keys of the comparison object and if the values are the same
+      var objContainsObj = function objContainsObj(original, comparison) {
+        var originalKeys = Object.keys(original);
+        var comparisonKeys = Object.keys(comparison);
+
+        // Check if original has all keys of the comparison object
+        if (!comparisonKeys.every(function (key) {
+          return originalKeys.includes(key);
+        })) {
+          return false;
+        }
+
+        // Check if values are the same
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = comparisonKeys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var key = _step.value;
+
+            if (original[key] !== comparison[key]) {
+              return false;
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        return true;
+      };
+
+      this._playedEvents = this._playedEvents.filter(function (event) {
+        return !objContainsObj(event, search);
+      });
+      this._events = this._events.filter(function (event) {
+        return !objContainsObj(event, search);
+      });
+    }
 
     /** reverseMidiData
      * reverses the order of the events and change the timestamps
@@ -1375,7 +1473,7 @@ var MidiPlayer = function () {
       });
 
       events.sort(function (a, b) {
-        return a.timestamp > b.timestamp;
+        return a.timestamp - b.timestamp;
       });
 
       var timeOffset = events[0].timestamp;
@@ -1386,7 +1484,7 @@ var MidiPlayer = function () {
       if (events[events.length - 1].timestamp !== duration) {
         throw new Error('timestamp of last event !== duration. Couldn\'t reverse midi data');
       }
-      console.warn('reverseMidiData is not fully implemented yet. Bugs my occur');
+      console.warn('reverseMidiData is not fully implemented yet. Bugs may occur');
 
       this.loadParsedMidi(events, 0);
     }
@@ -1397,6 +1495,20 @@ var MidiPlayer = function () {
     key: '_updateCurrentTime',
     value: function _updateCurrentTime() {
       this._currentTime = (new Date().getTime() - this._startingTime) * this.getCurrentSpeed();
+    }
+
+    /** updateDuration */
+
+  }, {
+    key: '_updateDuration',
+    value: function _updateDuration() {
+      var duration = 0;
+      if (this._events.length) {
+        duration = this._events[this._events.length - 1].timestamp;
+      } else if (this._playedEvents.length) {
+        duration = this._playedEvents[this._playedEvents.length - 1].timestamp;
+      }
+      this._duration = duration;
     }
 
     /** _waitForEvent
@@ -1429,6 +1541,38 @@ var MidiPlayer = function () {
   }]);
   return MidiPlayer;
 }();
+
+// locationOf
+//
+// returns the location where an element should be in a sorted array
+//
+
+
+var locationOf = function locationOf(element, array, comparer, start, end) {
+  if (array.length === 0) {
+    return -1;
+  }
+  start = start || 0;
+  end = end || array.length;
+
+  var middle = start + end >> 1; // should be faster than Math.floor(array.length / 2);
+
+  var comparisonResult = comparer(element, array[middle]);
+  comparisonResult = comparisonResult > 0 ? 1 : comparisonResult < 0 ? -1 : 0;
+
+  if (end - start <= 1) {
+    return comparisonResult === -1 ? middle : middle + 1;
+  }
+
+  switch (comparisonResult) {
+    case -1:
+      return locationOf(element, array, comparer, start, middle);
+    case 0:
+      return middle;
+    case 1:
+      return locationOf(element, array, comparer, middle, end);
+  };
+};
 
 exports.default = MidiPlayer;
 module.exports = exports['default'];

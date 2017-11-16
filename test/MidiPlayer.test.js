@@ -122,4 +122,67 @@ describe('MidiPlayer', function() {
             midiPlayer.play();
         });
     });
+
+    describe('Add and remove events', function() {
+        beforeEach(function() {
+            midiPlayer.reset();
+        });
+
+        describe('addEvent', function() {
+            it('should insert events in the right order based on the timestamp', function() {
+                midiPlayer.addEvent({timestamp: 2, note: 0, type: 'noteOn'});
+                midiPlayer.addEvent({timestamp: 3, note: 0, type: 'noteOn'});
+                midiPlayer.addEvent({timestamp: 1, note: 0, type: 'noteOn'});
+                midiPlayer.addEvent({timestamp: 5, note: 0, type: 'noteOn'});
+                midiPlayer.addEvent({timestamp: 4, note: 0, type: 'noteOn'});
+                assert.deepEqual(midiPlayer.getMidiEvents(), midiPlayer.getMidiEvents().sort((a, b) => a.timestamp - b.timestamp));
+            });
+            it('should check if the required properties are given', function() {
+                try {
+                    midiPlayer.addEvent({});
+                    throw false;
+                } catch (e) {if (!e) throw new Error('no error thrown with no properties given');}
+                try {
+                    midiPlayer.addEvent({timestamp: 0});
+                    throw false;
+                } catch (e) {if (!e) throw new Error('no error thrown with no properties given');}
+                try {
+                    midiPlayer.addEvent({timestamp: 0, type: 'noteOn'});
+                    throw false;
+                } catch (e) {if (!e) throw new Error('no error thrown with no properties given');}
+                try {
+                    midiPlayer.addEvent({timestamp: 0, type: 'noteOn', note: 0});
+                } catch(e) {
+                    throw new Error('error thrown with timestamp, type and note given');
+                }
+            });
+            it('should play added events', function(done) {
+                midiPlayer.addEvent({timestamp: 5, note: 0, type: 'noteOn', subtype: 'test'});
+                midiPlayer.addCallback('noteOn', event => {
+                    if (event.subtype === 'test') {
+                        done()
+                    } else {
+                        throw new Error('subtype got omitted');
+                    }
+                });
+                midiPlayer.play();
+            });
+        });
+        describe('removeEvents', function() {
+            it('should remove with the same properties and values as the search', function() {
+                midiPlayer.addEvent({timestamp: 2, note: 20, type: 'noteOn'});
+                midiPlayer.addEvent({timestamp: 3, note: 30, type: 'noteOn'});
+                midiPlayer.addEvent({timestamp: 1, note: 10, type: 'noteOn'});
+                midiPlayer.addEvent({timestamp: 5, note: 50, type: 'noteOff', subtype: 'test'});
+                midiPlayer.addEvent({timestamp: 4, note: 40, type: 'noteOff', subtype: 'test_2'});
+                assert.equal(midiPlayer.getMidiEvents().length, 5);
+                midiPlayer.removeEvents({subtype: 'test_2'});
+                assert.equal(midiPlayer.getMidiEvents().length, 4);
+                midiPlayer.removeEvents({type: 'noteOff', subtype: 'test'});
+                assert.equal(midiPlayer.getMidiEvents().length, 3);
+                midiPlayer.removeEvents({type: 'noteOn'});
+                assert.equal(midiPlayer.getMidiEvents().length, 0);
+            });
+        });
+    });
 });
