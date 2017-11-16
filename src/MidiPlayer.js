@@ -266,12 +266,6 @@ class MidiPlayer {
     }
     this._updateDuration();
   }
-
-  /* Create test data
-  player.addEvent({timestamp: 5, note: 40, type: 'noteOn', length: 55});
-  player.addEvent({timestamp: 60, note: 40, type: 'noteOff'});
-  player.addEvent({timestamp: 100, note: 41, type: 'noteOn', length: 100});
-  player.addEvent({timestamp: 200, note: 41, type: 'noteOff'});
   
   /** removeEvents
    * @description removes all events with have the same keys and properties as the search
