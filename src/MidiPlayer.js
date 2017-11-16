@@ -136,7 +136,6 @@ class MidiPlayer {
    */
   reset() {
     this.stop();
-    this.removeCallbacks();
     this.removeEvents({});
   }
   
@@ -303,8 +302,6 @@ class MidiPlayer {
   reverseMidiData() {
     const duration = this.getDuration();
     const events = this.getMidiEvents();
-    const noteOnEvents = [];
-    const noteOffEvents = [];
 
     // Reverse events and change timestamp
     events.reverse();
@@ -317,10 +314,8 @@ class MidiPlayer {
         for (let i = index + 1; i < events.length; i++) {
           if (events[i].type === 'noteOn' && events[i].note === event.note) {
             // Mirror noteOff event around noteOn event  (e.g. noteOff - noteOn -> new noteOff: 10 - 15 -> 20)
-            console.log('mirror', JSON.stringify(event), JSON.stringify(events[i]));
             const timeDiff = events[i].timestamp - event.timestamp;
             event.timestamp += 2 * timeDiff;
-            console.log('results in', event.timestamp);
             break;
           }
         }
@@ -329,15 +324,11 @@ class MidiPlayer {
 
     events.sort((a, b) => a.timestamp - b.timestamp);
 
+    // Change timestamps so the first event starts with timestamp=0
     const timeOffset = events[0].timestamp;
     events.forEach(event => event.timestamp -= timeOffset);
 
-    if (events[events.length - 1].timestamp !== duration) {
-      throw new Error('timestamp of last event !== duration. Couldn\'t reverse midi data');
-    }
-    console.warn('reverseMidiData is not fully implemented yet. Bugs may occur');
-    
-    this.loadParsedMidi(events, 0);
+    this.loadParsedMidi(events);
   }
 
   /** _updateCurrentTime */

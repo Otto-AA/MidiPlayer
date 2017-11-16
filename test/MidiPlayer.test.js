@@ -69,15 +69,16 @@ describe('MidiPlayer', function() {
     });
 
     describe('callbacks', function() {
-        before('load player data', function(done) {
-            midiPlayer.loadFromDataUrl(testData.dataUrl)
-                .then(() => done())
-                .catch(done);
-        });
-        beforeEach('restore player', function() {
+        beforeEach('reset player', function() {
             midiPlayer.removeCallbacks();
-            midiPlayer.stop();
-            midiPlayer.setSpeed(1);
+            midiPlayer.reset();
+            midiPlayer.addEvent({timestamp: 10, note: 40, type: 'noteOn', length: 40});
+            midiPlayer.addEvent({timestamp: 20, note: 1, type: 'noteOn', length: 40});
+            midiPlayer.addEvent({timestamp: 50, note: 40, type: 'noteOff'});
+            midiPlayer.addEvent({timestamp: 60, note: 1, type: 'noteOff'});
+        });
+        after(function () {
+            midiPlayer.removeCallbacks();
         });
 
         const oneTimeTrigger = function(callback) {
@@ -91,14 +92,14 @@ describe('MidiPlayer', function() {
             midiPlayer.addCallback('play', () => done());
             midiPlayer.play();
         });
-        it('should trigger noteOn within the first few seconds', function(done) {
-            const doneTriggerOnce = oneTimeTrigger(done);
-            midiPlayer.addCallback('noteOn', () => doneTriggerOnce());
-            midiPlayer.play();
-        });
         it('should trigger noteOff within the first few seconds', function(done) {
             const doneTriggerOnce = oneTimeTrigger(done);
             midiPlayer.addCallback('noteOff', () => doneTriggerOnce());
+            midiPlayer.play();
+        });
+        it('should trigger noteOn within the first few seconds', function(done) {
+            const doneTriggerOnce = oneTimeTrigger(done);
+            midiPlayer.addCallback('noteOn', () => doneTriggerOnce());
             midiPlayer.play();
         });
         it('should trigger pause on pause', function(done) {
@@ -118,12 +119,11 @@ describe('MidiPlayer', function() {
         });
         it('should trigger finish at the end', function(done) {
             midiPlayer.addCallback('finish', () => done());
-            midiPlayer.setTime(midiPlayer.getDuration() - 500);
             midiPlayer.play();
         });
     });
 
-    describe('Add and remove events', function() {
+    describe('modify events', function() {
         beforeEach(function() {
             midiPlayer.reset();
         });
@@ -157,12 +157,12 @@ describe('MidiPlayer', function() {
                 }
             });
             it('should play added events', function(done) {
-                midiPlayer.addEvent({timestamp: 5, note: 0, type: 'noteOn', subtype: 'test'});
+                midiPlayer.addEvent({timestamp: 5, note: 0, type: 'noteOn', testMsg: 'test'});
                 midiPlayer.addCallback('noteOn', event => {
-                    if (event.subtype === 'test') {
+                    if (event.testMsg === 'test') {
                         done()
                     } else {
-                        throw new Error('subtype got omitted');
+                        throw new Error('testMsg got omitted');
                     }
                 });
                 midiPlayer.play();
@@ -182,6 +182,23 @@ describe('MidiPlayer', function() {
                 assert.equal(midiPlayer.getMidiEvents().length, 3);
                 midiPlayer.removeEvents({type: 'noteOn'});
                 assert.equal(midiPlayer.getMidiEvents().length, 0);
+            });
+        });
+        describe('reverseMidiData', function() {
+            it('should reverse the data so it can be played backwards', function() {
+                midiPlayer.addEvent({timestamp: 0, note: 20, type: 'noteOn', length: 250});
+                midiPlayer.addEvent({timestamp: 250, note: 20, type: 'noteOff'});
+                midiPlayer.addEvent({timestamp: 1000, note: 50, type: 'noteOn', length: 100});
+                midiPlayer.addEvent({timestamp: 1100, note: 50, type: 'noteOff'});
+                midiPlayer.reverseMidiData();
+                
+                const expectedResult = [
+                    {timestamp: 0, note: 50, type: 'noteOn', length: 100},
+                    {timestamp: 100, note: 50, type: 'noteOff'},
+                    {timestamp: 1000, note: 20, type: 'noteOn', length: 250},
+                    {timestamp: 1250, note: 20, type: 'noteOff'}
+                ];
+                assert.deepEqual(midiPlayer.getMidiEvents(), expectedResult);
             });
         });
     });

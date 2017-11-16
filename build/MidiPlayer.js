@@ -1196,7 +1196,6 @@ var MidiPlayer = function () {
     key: 'reset',
     value: function reset() {
       this.stop();
-      this.removeCallbacks();
       this.removeEvents({});
     }
 
@@ -1370,12 +1369,6 @@ var MidiPlayer = function () {
       this._updateDuration();
     }
 
-    /* Create test data
-    player.addEvent({timestamp: 5, note: 40, type: 'noteOn', length: 55});
-    player.addEvent({timestamp: 60, note: 40, type: 'noteOff'});
-    player.addEvent({timestamp: 100, note: 41, type: 'noteOn', length: 100});
-    player.addEvent({timestamp: 200, note: 41, type: 'noteOff'});
-    
     /** removeEvents
      * @description removes all events with have the same keys and properties as the search
      * @param {object}  search - e.g. {note: 40, type: 'noteOff'} or {timestamp: 500}
@@ -1446,8 +1439,6 @@ var MidiPlayer = function () {
     value: function reverseMidiData() {
       var duration = this.getDuration();
       var events = this.getMidiEvents();
-      var noteOnEvents = [];
-      var noteOffEvents = [];
 
       // Reverse events and change timestamp
       events.reverse();
@@ -1462,10 +1453,8 @@ var MidiPlayer = function () {
           for (var i = index + 1; i < events.length; i++) {
             if (events[i].type === 'noteOn' && events[i].note === event.note) {
               // Mirror noteOff event around noteOn event  (e.g. noteOff - noteOn -> new noteOff: 10 - 15 -> 20)
-              console.log('mirror', JSON.stringify(event), JSON.stringify(events[i]));
               var timeDiff = events[i].timestamp - event.timestamp;
               event.timestamp += 2 * timeDiff;
-              console.log('results in', event.timestamp);
               break;
             }
           }
@@ -1476,17 +1465,13 @@ var MidiPlayer = function () {
         return a.timestamp - b.timestamp;
       });
 
+      // Change timestamps so the first event starts with timestamp=0
       var timeOffset = events[0].timestamp;
       events.forEach(function (event) {
         return event.timestamp -= timeOffset;
       });
 
-      if (events[events.length - 1].timestamp !== duration) {
-        throw new Error('timestamp of last event !== duration. Couldn\'t reverse midi data');
-      }
-      console.warn('reverseMidiData is not fully implemented yet. Bugs may occur');
-
-      this.loadParsedMidi(events, 0);
+      this.loadParsedMidi(events);
     }
 
     /** _updateCurrentTime */
