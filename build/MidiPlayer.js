@@ -1067,7 +1067,7 @@ var MidiPlayer = function () {
     }()
     /** loadParsedMidi
      * @param {noteEvent[]}   events    - array containing all formatted events
-     * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
+     * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
      * @returns {noteEvent[]}
      */
 
@@ -1330,6 +1330,65 @@ var MidiPlayer = function () {
       for (var key in this._callbacks) {
         this._callbacks[key] = [];
       }
+    }
+
+    // /** addEvent
+    //  * @param {noteEvent} event
+    //  */
+    // addEvent(event) {
+    // }
+
+    /** reverseMidiData
+     * reverses the order of the events and change the timestamps
+     * playing afterwards will play the song backwards, but the currentTime will still start from zero (and not from the end)
+     */
+
+  }, {
+    key: 'reverseMidiData',
+    value: function reverseMidiData() {
+      var duration = this.getDuration();
+      var events = this.getMidiEvents();
+      var noteOnEvents = [];
+      var noteOffEvents = [];
+
+      // Reverse events and change timestamp
+      events.reverse();
+      events.forEach(function (event) {
+        return event.timestamp = duration - event.timestamp;
+      });
+
+      // noteOff events are now before noteOn events. To fix this mirror noteOff events around corresponding noteOn event
+      events.forEach(function (event, index) {
+        if (event.type === 'noteOff') {
+          // Find corresponding noteOn event
+          for (var i = index + 1; i < events.length; i++) {
+            if (events[i].type === 'noteOn' && events[i].note === event.note) {
+              // Mirror noteOff event around noteOn event  (e.g. noteOff - noteOn -> new noteOff: 10 - 15 -> 20)
+              console.log('mirror', JSON.stringify(event), JSON.stringify(events[i]));
+              var timeDiff = events[i].timestamp - event.timestamp;
+              event.timestamp += 2 * timeDiff;
+              console.log('results in', event.timestamp);
+              break;
+            }
+          }
+        }
+      });
+
+      events.sort(function (a, b) {
+        return a.timestamp > b.timestamp;
+      });
+
+      var timeOffset = events[0].timestamp;
+      events.forEach(function (event) {
+        return event.timestamp -= timeOffset;
+      });
+
+      if (events[events.length - 1].timestamp !== duration) {
+        throw new Error('timestamp of last event !== duration. Couldn\'t reverse midi data');
+      }
+      console.warn('reverseMidiData is not fully implemented yet. Bugs my occur');
+
+      this.loadParsedMidi(events, 0);
     }
 
     /** _updateCurrentTime */
