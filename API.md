@@ -10,6 +10,7 @@
     -   [play](#play)
     -   [pause](#pause)
     -   [stop](#stop)
+    -   [reset](#reset)
     -   [setTime](#settime)
     -   [getCurrentTime](#getcurrenttime)
     -   [setSpeed](#setspeed)
@@ -21,6 +22,10 @@
     -   [getPreviousEventsByTime](#getpreviouseventsbytime)
     -   [getEventsByTimeRange](#geteventsbytimerange)
     -   [triggerCallbacks](#triggercallbacks)
+    -   [removeCallbacks](#removecallbacks)
+    -   [addEvent](#addevent)
+    -   [removeEvents](#removeevents)
+    -   [reverseMidiData](#reversemididata)
 
 ## MidiPlayer
 
@@ -91,6 +96,10 @@ pauses the playing at the current time
 ### stop
 
 pauses the playing and sets the current time to zero
+
+### reset
+
+stops the player and removes all events
 
 ### setTime
 
@@ -164,8 +173,8 @@ getEventsByTimeRange
 
 **Parameters**
 
--   `start` **int** start of the time range in miliseconds
--   `end` **int** end of the time range in miliseconds
+-   `startTime` **int** start of the time range in miliseconds
+-   `endTime` **int** end of the time range in miliseconds
 
 Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** containing all events which are in the time range
 
@@ -177,3 +186,27 @@ triggerCallbacks
 
 -   `event` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** the eventname which will be triggered
 -   `data` **any** data passed to the callbacks
+
+### removeCallbacks
+
+removeCallbacks
+
+### addEvent
+
+addEvent
+
+**Parameters**
+
+-   `newEvent` **noteEvent** must contain: timestamp, note, type [, optional properties]
+
+### removeEvents
+
+removes all events which have the same keys and properties as the search
+
+**Parameters**
+
+-   `search` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** e.g. {note: 40, type: 'noteOff'} or {timestamp: 500}
+
+### reverseMidiData
+
+playing afterwards will play the song backwards, but currentTime will still start from zero (and not from the end)

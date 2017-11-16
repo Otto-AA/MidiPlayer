@@ -246,7 +246,7 @@ class MidiPlayer {
   }
 
   /** addEvent
-   * @param {noteEvent} event - must contain: timestamp, note, type [, optional properties]
+   * @param {noteEvent} newEvent - must contain: timestamp, note, type [, optional properties]
    */
   addEvent(newEvent) {
     // Check if required properties are given
@@ -267,7 +267,7 @@ class MidiPlayer {
   }
   
   /** removeEvents
-   * @description removes all events with have the same keys and properties as the search
+   * @description removes all events which have the same keys and properties as the search
    * @param {object}  search - e.g. {note: 40, type: 'noteOff'} or {timestamp: 500}
    */
   removeEvents(search) {
@@ -296,8 +296,7 @@ class MidiPlayer {
   }
 
   /** reverseMidiData
-   * reverses the order of the events and change the timestamps
-   * playing afterwards will play the song backwards, but the currentTime will still start from zero (and not from the end)
+   * @description playing afterwards will play the song backwards, but currentTime will still start from zero (and not from the end)
    */
   reverseMidiData() {
     const duration = this.getDuration();
