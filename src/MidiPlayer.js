@@ -39,7 +39,7 @@ class MidiPlayer {
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
    * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted event
    */
-  async loadFromDataUrl(midi, noteShift) {
+  loadFromDataUrl(midi, noteShift) {
     return new Promise((resolve, reject) => {
       const midiParser = new MidiParser();
       const parsedMidi = midiParser.parseDataUrl(midi);
@@ -52,7 +52,7 @@ class MidiPlayer {
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
    * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted events
    */
-  async loadFromUint8Array(midi, noteShift) {
+  loadFromUint8Array(midi, noteShift) {
     return new Promise((resolve, reject) => {
       const midiParser = new MidiParser();
       const parsedMidi = midiParser.parseUint8(midi);
@@ -65,7 +65,7 @@ class MidiPlayer {
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
    * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted events
    */
-  async loadFromRelativeUrl(url, noteShift) {
+  loadFromRelativeUrl(url, noteShift) {
     console.warn('loadFromRelativeUrl is not fully implemented and testet yet');
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest;

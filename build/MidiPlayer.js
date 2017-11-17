@@ -999,35 +999,16 @@ var MidiPlayer = function () {
 
   (0, _createClass3.default)(MidiPlayer, [{
     key: 'loadFromDataUrl',
-    value: function () {
-      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(midi, noteShift) {
-        var _this = this;
+    value: function loadFromDataUrl(midi, noteShift) {
+      var _this = this;
 
-        return _regenerator2.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                return _context.abrupt('return', new Promise(function (resolve, reject) {
-                  var midiParser = new _MidiParser2.default();
-                  var parsedMidi = midiParser.parseDataUrl(midi);
-                  _this.loadParsedMidi(parsedMidi, noteShift);
-                  resolve(_this.getMidiEvents());
-                }));
-
-              case 1:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function loadFromDataUrl(_x, _x2) {
-        return _ref.apply(this, arguments);
-      }
-
-      return loadFromDataUrl;
-    }()
+      return new Promise(function (resolve, reject) {
+        var midiParser = new _MidiParser2.default();
+        var parsedMidi = midiParser.parseDataUrl(midi);
+        _this.loadParsedMidi(parsedMidi, noteShift);
+        resolve(_this.getMidiEvents());
+      });
+    }
     /** loadFromUint8Array
      * @param {Uint8Array}  midi      - uint8 array representing midi file
      * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
@@ -1036,35 +1017,16 @@ var MidiPlayer = function () {
 
   }, {
     key: 'loadFromUint8Array',
-    value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(midi, noteShift) {
-        var _this2 = this;
+    value: function loadFromUint8Array(midi, noteShift) {
+      var _this2 = this;
 
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                return _context2.abrupt('return', new Promise(function (resolve, reject) {
-                  var midiParser = new _MidiParser2.default();
-                  var parsedMidi = midiParser.parseUint8(midi);
-                  _this2.loadParsedMidi(parsedMidi, noteShift);
-                  resolve(_this2.getMidiEvents());
-                }));
-
-              case 1:
-              case 'end':
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this);
-      }));
-
-      function loadFromUint8Array(_x3, _x4) {
-        return _ref2.apply(this, arguments);
-      }
-
-      return loadFromUint8Array;
-    }()
+      return new Promise(function (resolve, reject) {
+        var midiParser = new _MidiParser2.default();
+        var parsedMidi = midiParser.parseUint8(midi);
+        _this2.loadParsedMidi(parsedMidi, noteShift);
+        resolve(_this2.getMidiEvents());
+      });
+    }
     /** loadFromRelativeUrl
      * @param {string}  url   - a relative url to the .mid file
      * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
@@ -1073,48 +1035,29 @@ var MidiPlayer = function () {
 
   }, {
     key: 'loadFromRelativeUrl',
-    value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(url, noteShift) {
-        var _this3 = this;
+    value: function loadFromRelativeUrl(url, noteShift) {
+      var _this3 = this;
 
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                console.warn('loadFromRelativeUrl is not fully implemented and testet yet');
-                return _context3.abrupt('return', new Promise(function (resolve, reject) {
-                  var xhr = new XMLHttpRequest();
-                  xhr.open('GET', url, true);
-                  xhr.overrideMimeType('text/plain; charset=x-user-defined');
-                  xhr.onreadystatechange = function () {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                      var buffer = [];
-                      for (var i = 0; i < xhr.responseText.length; i++) {
-                        buffer[i] = String.fromCharCode(xhr.responseText.charCodeAt(i) & 255);
-                      }
-                      var data = buffer.join('');
-                      var midiParser = new _MidiParser2.default();
-                      var parsed = midiParser.parseText(data);
-                      resolve(_this3.loadParsedMidi(parsed, noteShift));
-                    }
-                  };
-                  xhr.send();
-                }));
-
-              case 2:
-              case 'end':
-                return _context3.stop();
+      console.warn('loadFromRelativeUrl is not fully implemented and testet yet');
+      return new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.overrideMimeType('text/plain; charset=x-user-defined');
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            var buffer = [];
+            for (var i = 0; i < xhr.responseText.length; i++) {
+              buffer[i] = String.fromCharCode(xhr.responseText.charCodeAt(i) & 255);
             }
+            var data = buffer.join('');
+            var midiParser = new _MidiParser2.default();
+            var parsed = midiParser.parseText(data);
+            resolve(_this3.loadParsedMidi(parsed, noteShift));
           }
-        }, _callee3, this);
-      }));
-
-      function loadFromRelativeUrl(_x5, _x6) {
-        return _ref3.apply(this, arguments);
-      }
-
-      return loadFromRelativeUrl;
-    }()
+        };
+        xhr.send();
+      });
+    }
 
     /** loadParsedMidi
      * @param {noteEvent[]}   events    - array containing all formatted events
@@ -1157,11 +1100,11 @@ var MidiPlayer = function () {
   }, {
     key: 'play',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
         var nextEvent;
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context.prev = _context.next) {
               case 0:
                 this._startingTime = new Date().getTime() - this.getCurrentTime() / this.getCurrentSpeed();
                 this._playing = true;
@@ -1170,26 +1113,26 @@ var MidiPlayer = function () {
 
               case 3:
                 if (!(this._playing && this._events.length > 0)) {
-                  _context4.next = 13;
+                  _context.next = 13;
                   break;
                 }
 
                 nextEvent = this._events.shift();
-                _context4.next = 7;
+                _context.next = 7;
                 return this._waitForEvent(nextEvent);
 
               case 7:
                 if (this._playing) {
-                  _context4.next = 9;
+                  _context.next = 9;
                   break;
                 }
 
-                return _context4.abrupt('break', 13);
+                return _context.abrupt('break', 13);
 
               case 9:
                 this._handleEvent(nextEvent);
                 this._playedEvents.push(nextEvent);
-                _context4.next = 3;
+                _context.next = 3;
                 break;
 
               case 13:
@@ -1201,14 +1144,14 @@ var MidiPlayer = function () {
 
               case 15:
               case 'end':
-                return _context4.stop();
+                return _context.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee, this);
       }));
 
       function play() {
-        return _ref4.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return play;
