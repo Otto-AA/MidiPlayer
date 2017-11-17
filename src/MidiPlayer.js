@@ -44,7 +44,7 @@ class MidiPlayer {
       const midiParser = new MidiParser();
       const parsedMidi = midiParser.parseDataUrl(midi);
       this.loadParsedMidi(parsedMidi, noteShift);
-      resolve(this.getMidiEvents());
+      resolve(() => this.getMidiEvents());
     });
   }
   /** loadFromUint8Array
@@ -57,9 +57,27 @@ class MidiPlayer {
       const midiParser = new MidiParser();
       const parsedMidi = midiParser.parseUint8(midi);
       this.loadParsedMidi(parsedMidi, noteShift);
-      resolve(this.getMidiEvents());
+      resolve(() => this.getMidiEvents());
     });
   }
+
+  async loadFromRelativeUrl(url) {
+    console.warn('this feature is not fully implemented and testet yet. I suggest not using it for now.');
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest;
+      xhr.open('GET', url, true);
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+          const uint8 = new Uint8Array(xhr.responseText);
+          this.loadFromUint8Array(uint8)
+            .then(resolve)
+            .catch(reject);
+        }
+      };
+      xhr.send();
+    });
+  }
+
   /** loadParsedMidi
    * @param {noteEvent[]}   events    - array containing all formatted events
    * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
