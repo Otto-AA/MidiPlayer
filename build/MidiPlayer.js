@@ -1069,43 +1069,26 @@ var MidiPlayer = function () {
 
       return loadFromUint8Array;
     }()
-  }, {
-    key: 'loadFromRelativeUrl',
-    value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(url) {
-        var _this3 = this;
 
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                console.warn('this feature is not fully implemented and testet yet. I suggest not using it for now.');
-                return _context3.abrupt('return', new Promise(function (resolve, reject) {
-                  var xhr = new XMLHttpRequest();
-                  xhr.open('GET', url, true);
-                  xhr.onreadystatechange = function () {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                      var uint8 = new Uint8Array(xhr.responseText);
-                      _this3.loadFromUint8Array(uint8).then(resolve).catch(reject);
-                    }
-                  };
-                  xhr.send();
-                }));
-
-              case 2:
-              case 'end':
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
-
-      function loadFromRelativeUrl(_x5) {
-        return _ref3.apply(this, arguments);
-      }
-
-      return loadFromRelativeUrl;
-    }()
+    // async loadFromRelativeUrl(url) {
+    //   console.warn('this feature is not fully implemented and testet yet. I suggest not using it for now.');
+    //   return new Promise((resolve, reject) => {
+    //     const xhr = new XMLHttpRequest;
+    //     xhr.open('GET', url, true);
+    //     xhr.onreadystatechange = () => {
+    //       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+    //         const encoder = new TextEncoder('utf-8');
+    //         const uint8 = encoder.encode(xhr.responseText);
+    //         console.log(typeof xhr.responseText, xhr.responseText);
+    //         console.log(uint8);
+    //         this.loadFromUint8Array(uint8)
+    //           .then(resolve)
+    //           .catch(reject);
+    //       }
+    //     };
+    //     xhr.send();
+    //   });
+    // }
 
     /** loadParsedMidi
      * @param {noteEvent[]}   events    - array containing all formatted events
@@ -1148,11 +1131,11 @@ var MidiPlayer = function () {
   }, {
     key: 'play',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
         var nextEvent;
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 this._startingTime = new Date().getTime() - this.getCurrentTime() / this.getCurrentSpeed();
                 this._playing = true;
@@ -1161,26 +1144,26 @@ var MidiPlayer = function () {
 
               case 3:
                 if (!(this._playing && this._events.length > 0)) {
-                  _context4.next = 13;
+                  _context3.next = 13;
                   break;
                 }
 
                 nextEvent = this._events.shift();
-                _context4.next = 7;
+                _context3.next = 7;
                 return this._waitForEvent(nextEvent);
 
               case 7:
                 if (this._playing) {
-                  _context4.next = 9;
+                  _context3.next = 9;
                   break;
                 }
 
-                return _context4.abrupt('break', 13);
+                return _context3.abrupt('break', 13);
 
               case 9:
                 this._handleEvent(nextEvent);
                 this._playedEvents.push(nextEvent);
-                _context4.next = 3;
+                _context3.next = 3;
                 break;
 
               case 13:
@@ -1192,14 +1175,14 @@ var MidiPlayer = function () {
 
               case 15:
               case 'end':
-                return _context4.stop();
+                return _context3.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee3, this);
       }));
 
       function play() {
-        return _ref4.apply(this, arguments);
+        return _ref3.apply(this, arguments);
       }
 
       return play;

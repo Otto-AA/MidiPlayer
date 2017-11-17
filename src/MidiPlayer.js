@@ -61,22 +61,25 @@ class MidiPlayer {
     });
   }
 
-  async loadFromRelativeUrl(url) {
-    console.warn('this feature is not fully implemented and testet yet. I suggest not using it for now.');
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest;
-      xhr.open('GET', url, true);
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-          const uint8 = new Uint8Array(xhr.responseText);
-          this.loadFromUint8Array(uint8)
-            .then(resolve)
-            .catch(reject);
-        }
-      };
-      xhr.send();
-    });
-  }
+  // async loadFromRelativeUrl(url) {
+  //   console.warn('this feature is not fully implemented and testet yet. I suggest not using it for now.');
+  //   return new Promise((resolve, reject) => {
+  //     const xhr = new XMLHttpRequest;
+  //     xhr.open('GET', url, true);
+  //     xhr.onreadystatechange = () => {
+  //       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+  //         const encoder = new TextEncoder('utf-8');
+  //         const uint8 = encoder.encode(xhr.responseText);
+  //         console.log(typeof xhr.responseText, xhr.responseText);
+  //         console.log(uint8);
+  //         this.loadFromUint8Array(uint8)
+  //           .then(resolve)
+  //           .catch(reject);
+  //       }
+  //     };
+  //     xhr.send();
+  //   });
+  // }
 
   /** loadParsedMidi
    * @param {noteEvent[]}   events    - array containing all formatted events
