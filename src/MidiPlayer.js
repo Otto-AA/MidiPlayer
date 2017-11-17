@@ -37,49 +37,55 @@ class MidiPlayer {
   /** loadFromDataUrl
    * @param {string}  midi          - b64 encoded midi file
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {Promise<noteEvent>}             - resolving with an array containing the formatted event
+   * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted event
    */
   async loadFromDataUrl(midi, noteShift) {
     return new Promise((resolve, reject) => {
       const midiParser = new MidiParser();
       const parsedMidi = midiParser.parseDataUrl(midi);
       this.loadParsedMidi(parsedMidi, noteShift);
-      resolve(() => this.getMidiEvents());
+      resolve(this.getMidiEvents());
     });
   }
   /** loadFromUint8Array
    * @param {Uint8Array}  midi      - uint8 array representing midi file
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {Promise<noteEvent>}             - resolving with an array containing the formatted event
+   * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted events
    */
   async loadFromUint8Array(midi, noteShift) {
     return new Promise((resolve, reject) => {
       const midiParser = new MidiParser();
       const parsedMidi = midiParser.parseUint8(midi);
       this.loadParsedMidi(parsedMidi, noteShift);
-      resolve(() => this.getMidiEvents());
+      resolve(this.getMidiEvents());
     });
   }
-
-  // async loadFromRelativeUrl(url) {
-  //   console.warn('this feature is not fully implemented and testet yet. I suggest not using it for now.');
-  //   return new Promise((resolve, reject) => {
-  //     const xhr = new XMLHttpRequest;
-  //     xhr.open('GET', url, true);
-  //     xhr.onreadystatechange = () => {
-  //       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-  //         const encoder = new TextEncoder('utf-8');
-  //         const uint8 = encoder.encode(xhr.responseText);
-  //         console.log(typeof xhr.responseText, xhr.responseText);
-  //         console.log(uint8);
-  //         this.loadFromUint8Array(uint8)
-  //           .then(resolve)
-  //           .catch(reject);
-  //       }
-  //     };
-  //     xhr.send();
-  //   });
-  // }
+  /** loadFromRelativeUrl
+   * @param {string}  url   - a relative url to the .mid file
+   * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
+   * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted events
+   */
+  async loadFromRelativeUrl(url, noteShift) {
+    console.warn('loadFromRelativeUrl is not fully implemented and testet yet');
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest;
+      xhr.open('GET', url, true);
+      xhr.overrideMimeType('text/plain; charset=x-user-defined');
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+          const buffer = [];
+          for (let i = 0; i < xhr.responseText.length; i++) {
+            buffer[i] = String.fromCharCode(xhr.responseText.charCodeAt(i) & 255);
+          }
+          const data = buffer.join('');
+          const midiParser = new MidiParser();
+          const parsed = midiParser.parseText(data);
+          resolve(this.loadParsedMidi(parsed, noteShift));
+        }
+      };
+      xhr.send();
+    });
+  }
 
   /** loadParsedMidi
    * @param {noteEvent[]}   events    - array containing all formatted events

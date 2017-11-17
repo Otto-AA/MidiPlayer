@@ -304,6 +304,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /** MidiParser
  * parses a midi to an array of formatted events
  * 
+ * @function parseText(text)
  * @function parseDataUrl(b64Midi)
  * @function parseUint8(uint8Midi)
  * 
@@ -325,11 +326,10 @@ var MidiParser = function () {
     }
 
     (0, _createClass3.default)(MidiParser, [{
-        key: 'parseDataUrl',
-        value: function parseDataUrl(dataUrl) {
-            var data = _base2.default.atob(dataUrl.split(',')[1]);
+        key: 'parseText',
+        value: function parseText(text) {
             try {
-                var midiFile = MidiFile(data);
+                var midiFile = MidiFile(text);
                 var replayer = new Replayer(midiFile);
                 var replayerData = replayer.getData();
                 var formattedData = this._formatReplayerData(replayerData);
@@ -339,10 +339,16 @@ var MidiParser = function () {
             }
         }
     }, {
+        key: 'parseDataUrl',
+        value: function parseDataUrl(dataUrl) {
+            var data = _base2.default.atob(dataUrl.split(',')[1]);
+            return this.parseText(data);
+        }
+    }, {
         key: 'parseUint8',
-        value: function parseUint8(midi) {
-            var b64encoded = 'data:audio/mid;base64,' + _base2.default.btoa(String.fromCharCode.apply(null, midi));
-            return this.parseDataUrl(b64encoded);
+        value: function parseUint8(uint8) {
+            var data = String.fromCharCode.apply(null, uint8);
+            return this.parseText(data);
         }
     }, {
         key: '_formatReplayerData',

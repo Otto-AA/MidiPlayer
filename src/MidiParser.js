@@ -14,6 +14,7 @@ import base64 from './base64';
 /** MidiParser
  * parses a midi to an array of formatted events
  * 
+ * @function parseText(text)
  * @function parseDataUrl(b64Midi)
  * @function parseUint8(uint8Midi)
  * 
@@ -30,10 +31,9 @@ import base64 from './base64';
  */
 
 class MidiParser {
-    parseDataUrl(dataUrl) {
-        const data = base64.atob(dataUrl.split(',')[1]);
+    parseText(text) {
         try {
-            const midiFile = MidiFile(data);
+            const midiFile = MidiFile(text);
             const replayer = new Replayer(midiFile);
             const replayerData = replayer.getData();
             const formattedData = this._formatReplayerData(replayerData);
@@ -42,9 +42,13 @@ class MidiParser {
             throw new Error(event);
         }
     }
-    parseUint8(midi) {
-        const b64encoded = 'data:audio/mid;base64,' + base64.btoa(String.fromCharCode.apply(null, midi));
-        return this.parseDataUrl(b64encoded);
+    parseDataUrl(dataUrl) {
+        const data = base64.atob(dataUrl.split(',')[1]);
+        return this.parseText(data);
+    }
+    parseUint8(uint8) {
+        const data = String.fromCharCode.apply(null, uint8);
+        return this.parseText(data);
     }
     _formatReplayerData(midiData) {
         const data = midiData;

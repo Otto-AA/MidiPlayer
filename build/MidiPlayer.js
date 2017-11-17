@@ -993,7 +993,7 @@ var MidiPlayer = function () {
   /** loadFromDataUrl
    * @param {string}  midi          - b64 encoded midi file
    * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {Promise<noteEvent>}             - resolving with an array containing the formatted event
+   * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted event
    */
 
 
@@ -1011,9 +1011,7 @@ var MidiPlayer = function () {
                   var midiParser = new _MidiParser2.default();
                   var parsedMidi = midiParser.parseDataUrl(midi);
                   _this.loadParsedMidi(parsedMidi, noteShift);
-                  resolve(function () {
-                    return _this.getMidiEvents();
-                  });
+                  resolve(_this.getMidiEvents());
                 }));
 
               case 1:
@@ -1033,7 +1031,7 @@ var MidiPlayer = function () {
     /** loadFromUint8Array
      * @param {Uint8Array}  midi      - uint8 array representing midi file
      * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-     * @returns {Promise<noteEvent>}             - resolving with an array containing the formatted event
+     * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted events
      */
 
   }, {
@@ -1050,9 +1048,7 @@ var MidiPlayer = function () {
                   var midiParser = new _MidiParser2.default();
                   var parsedMidi = midiParser.parseUint8(midi);
                   _this2.loadParsedMidi(parsedMidi, noteShift);
-                  resolve(function () {
-                    return _this2.getMidiEvents();
-                  });
+                  resolve(_this2.getMidiEvents());
                 }));
 
               case 1:
@@ -1069,26 +1065,56 @@ var MidiPlayer = function () {
 
       return loadFromUint8Array;
     }()
+    /** loadFromRelativeUrl
+     * @param {string}  url   - a relative url to the .mid file
+     * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
+     * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted events
+     */
 
-    // async loadFromRelativeUrl(url) {
-    //   console.warn('this feature is not fully implemented and testet yet. I suggest not using it for now.');
-    //   return new Promise((resolve, reject) => {
-    //     const xhr = new XMLHttpRequest;
-    //     xhr.open('GET', url, true);
-    //     xhr.onreadystatechange = () => {
-    //       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-    //         const encoder = new TextEncoder('utf-8');
-    //         const uint8 = encoder.encode(xhr.responseText);
-    //         console.log(typeof xhr.responseText, xhr.responseText);
-    //         console.log(uint8);
-    //         this.loadFromUint8Array(uint8)
-    //           .then(resolve)
-    //           .catch(reject);
-    //       }
-    //     };
-    //     xhr.send();
-    //   });
-    // }
+  }, {
+    key: 'loadFromRelativeUrl',
+    value: function () {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(url, noteShift) {
+        var _this3 = this;
+
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                console.warn('loadFromRelativeUrl is not fully implemented and testet yet');
+                return _context3.abrupt('return', new Promise(function (resolve, reject) {
+                  var xhr = new XMLHttpRequest();
+                  xhr.open('GET', url, true);
+                  xhr.overrideMimeType('text/plain; charset=x-user-defined');
+                  xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                      var buffer = [];
+                      for (var i = 0; i < xhr.responseText.length; i++) {
+                        buffer[i] = String.fromCharCode(xhr.responseText.charCodeAt(i) & 255);
+                      }
+                      var data = buffer.join('');
+                      var midiParser = new _MidiParser2.default();
+                      var parsed = midiParser.parseText(data);
+                      resolve(_this3.loadParsedMidi(parsed, noteShift));
+                    }
+                  };
+                  xhr.send();
+                }));
+
+              case 2:
+              case 'end':
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function loadFromRelativeUrl(_x5, _x6) {
+        return _ref3.apply(this, arguments);
+      }
+
+      return loadFromRelativeUrl;
+    }()
 
     /** loadParsedMidi
      * @param {noteEvent[]}   events    - array containing all formatted events
@@ -1131,11 +1157,11 @@ var MidiPlayer = function () {
   }, {
     key: 'play',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
         var nextEvent;
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 this._startingTime = new Date().getTime() - this.getCurrentTime() / this.getCurrentSpeed();
                 this._playing = true;
@@ -1144,26 +1170,26 @@ var MidiPlayer = function () {
 
               case 3:
                 if (!(this._playing && this._events.length > 0)) {
-                  _context3.next = 13;
+                  _context4.next = 13;
                   break;
                 }
 
                 nextEvent = this._events.shift();
-                _context3.next = 7;
+                _context4.next = 7;
                 return this._waitForEvent(nextEvent);
 
               case 7:
                 if (this._playing) {
-                  _context3.next = 9;
+                  _context4.next = 9;
                   break;
                 }
 
-                return _context3.abrupt('break', 13);
+                return _context4.abrupt('break', 13);
 
               case 9:
                 this._handleEvent(nextEvent);
                 this._playedEvents.push(nextEvent);
-                _context3.next = 3;
+                _context4.next = 3;
                 break;
 
               case 13:
@@ -1175,14 +1201,14 @@ var MidiPlayer = function () {
 
               case 15:
               case 'end':
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       function play() {
-        return _ref3.apply(this, arguments);
+        return _ref4.apply(this, arguments);
       }
 
       return play;
@@ -3416,6 +3442,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /** MidiParser
  * parses a midi to an array of formatted events
  * 
+ * @function parseText(text)
  * @function parseDataUrl(b64Midi)
  * @function parseUint8(uint8Midi)
  * 
@@ -3437,11 +3464,10 @@ var MidiParser = function () {
     }
 
     (0, _createClass3.default)(MidiParser, [{
-        key: 'parseDataUrl',
-        value: function parseDataUrl(dataUrl) {
-            var data = _base2.default.atob(dataUrl.split(',')[1]);
+        key: 'parseText',
+        value: function parseText(text) {
             try {
-                var midiFile = MidiFile(data);
+                var midiFile = MidiFile(text);
                 var replayer = new Replayer(midiFile);
                 var replayerData = replayer.getData();
                 var formattedData = this._formatReplayerData(replayerData);
@@ -3451,10 +3477,16 @@ var MidiParser = function () {
             }
         }
     }, {
+        key: 'parseDataUrl',
+        value: function parseDataUrl(dataUrl) {
+            var data = _base2.default.atob(dataUrl.split(',')[1]);
+            return this.parseText(data);
+        }
+    }, {
         key: 'parseUint8',
-        value: function parseUint8(midi) {
-            var b64encoded = 'data:audio/mid;base64,' + _base2.default.btoa(String.fromCharCode.apply(null, midi));
-            return this.parseDataUrl(b64encoded);
+        value: function parseUint8(uint8) {
+            var data = String.fromCharCode.apply(null, uint8);
+            return this.parseText(data);
         }
     }, {
         key: '_formatReplayerData',
