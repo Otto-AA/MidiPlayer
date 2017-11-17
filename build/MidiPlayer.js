@@ -1113,11 +1113,11 @@ var MidiPlayer = function () {
 
               case 3:
                 if (!(this._playing && this._events.length > 0)) {
-                  _context.next = 13;
+                  _context.next = 14;
                   break;
                 }
 
-                nextEvent = this._events.shift();
+                nextEvent = this._events[0];
                 _context.next = 7;
                 return this._waitForEvent(nextEvent);
 
@@ -1127,22 +1127,24 @@ var MidiPlayer = function () {
                   break;
                 }
 
-                return _context.abrupt('break', 13);
+                return _context.abrupt('break', 14);
 
               case 9:
+
                 this._handleEvent(nextEvent);
+                this._events.shift(); // Remove event after waiting, so the event does not "disappear" from the lists for this time. Useful for modifying/getting events while playing
                 this._playedEvents.push(nextEvent);
                 _context.next = 3;
                 break;
 
-              case 13:
+              case 14:
 
                 this.pause();
                 if (!this._events.length) {
                   this.triggerCallbacks('finish');
                 }
 
-              case 15:
+              case 16:
               case 'end':
                 return _context.stop();
             }

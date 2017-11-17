@@ -125,11 +125,13 @@ class MidiPlayer {
     this.triggerCallbacks('play');
     
     while (this._playing && this._events.length > 0) {
-      const nextEvent = this._events.shift();
+      const nextEvent = this._events[0];
       await this._waitForEvent(nextEvent);
       if (!this._playing)  // Check another time because we maybe waited a few seconds for the next event
         break;
+
       this._handleEvent(nextEvent);
+      this._events.shift(); // Remove event after waiting, so the event does not "disappear" from the lists for this time. Useful for modifying/getting events while playing
       this._playedEvents.push(nextEvent);
     }
     
