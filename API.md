@@ -5,8 +5,10 @@
 -   [MidiPlayer](#midiplayer)
     -   [loadFromDataUrl](#loadfromdataurl)
     -   [loadFromUint8Array](#loadfromuint8array)
+    -   [loadFromRelativeUrl](#loadfromrelativeurl)
     -   [loadParsedMidi](#loadparsedmidi)
     -   [addCallback](#addcallback)
+    -   [addCustomCallback](#addcustomcallback)
     -   [play](#play)
     -   [pause](#pause)
     -   [stop](#stop)
@@ -26,10 +28,8 @@
     -   [addEvent](#addevent)
     -   [removeEvents](#removeevents)
     -   [reverseMidiData](#reversemididata)
-
+    
 ## MidiPlayer
-
-noteEvent
 
 **Properties**
 
@@ -43,29 +43,42 @@ noteEvent
 
 ### loadFromDataUrl
 
-loadFromDataUrl
-
 **Parameters**
 
 -   `midi` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** b64 encoded midi file
 -   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;noteEvent>** resolving with an array containing the formatted event
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>>** resolving with an array containing the formatted event
 
 ### loadFromUint8Array
-
-loadFromUint8Array
 
 **Parameters**
 
 -   `midi` **[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** uint8 array representing midi file
 -   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;noteEvent>** resolving with an array containing the formatted event
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>>** resolving with an array containing the formatted events
+
+### loadFromRelativeUrl
+
+**Parameters**
+
+-   `url` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** a relative url to the .mid file (e.g. ./data/test.mid)
+-   `noteShift` **int** changes the note value of each element by n. (e.g. for a piano this should be -21) (optional, default `0`)
+
+**Examples**
+
+_Example for loading piano midi data_
+
+```javascript
+player.loadFromRelativeUrl('./data/test.mid', -21)
+ .then(function(midiData) { console.log(midiData); })
+ .catch(function(error) { console.log(error); });
+```
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>>** resolving with an array containing the formatted events
 
 ### loadParsedMidi
-
-loadParsedMidi
 
 **Parameters**
 
@@ -76,14 +89,40 @@ Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 
 ### addCallback
 
-addCallback
 Add an event listener
 
 **Parameters**
 
--   `event`  
--   `callback`  
 -   `eventName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
+-   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
+
+**Examples**
+
+_Example showing how to listen to noteOn events_
+
+```javascript
+player.addCallback('noteOn', function(event) { console.log(event); });
+```
+
+### addCustomCallback
+
+Add an event listener to a specific event
+
+**Parameters**
+
+-   `targetEvent` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+-   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
+
+**Examples**
+
+_Example showing how to listen to noteOn events with the note 40_
+
+```javascript
+player.addCustomCallback({
+  type: 'noteOn',
+  note: 40
+}, function(event) { console.log(event); });
+```
 
 ### play
 
@@ -103,21 +142,15 @@ stops the player and removes all events
 
 ### setTime
 
-setTime
-
 **Parameters**
 
 -   `miliseconds` **int** 
 
 ### getCurrentTime
 
-getCurrentTime
-
 Returns **int** current time in miliseconds
 
 ### setSpeed
-
-setSpeed
 
 **Parameters**
 
@@ -125,41 +158,33 @@ setSpeed
 
 ### getCurrentSpeed
 
-getCurrentSpeed
-
 Returns **int** current relative speed
 
 ### isPlaying
-
-isPlaying
 
 Returns **bool** 
 
 ### getDuration
 
-getDuration
-
 Returns **float** duration of the midi in miliseconds
 
 ### getMidiEvents
-
-getMidiEvents
 
 Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** (all loaded events)
 
 ### getNextEventsByTime
 
-getNextEventsByTime
+get all events which are in the range [currentTime <= event.timestamp <= currentTime + miliseconds]
 
 **Parameters**
 
 -   `miliseconds` **int** specifies the end of the time range
 
-Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** containing all events which are in the range [currentTime <-> currentTime + miliseconds]
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;noteEvent>** 
 
 ### getPreviousEventsByTime
 
-getPreviousEventsByTime
+get all events which are in the range [currentTime - miliseconds <= event.timestamp <= currentTime]
 
 **Parameters**
 
@@ -169,7 +194,7 @@ Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 
 ### getEventsByTimeRange
 
-getEventsByTimeRange
+get all events which are in the range [startTime <= event.timestamp <= endTime]
 
 **Parameters**
 
@@ -180,24 +205,39 @@ Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 
 ### triggerCallbacks
 
-triggerCallbacks
-
 **Parameters**
 
--   `event` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** the eventname which will be triggered
--   `data` **any** data passed to the callbacks
+-   `event` **([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))** string -> type which will be triggered | object -> event which will be triggered
+
+**Examples**
+
+_Example showing how to trigger play_
+
+```javascript
+player.triggerCallbacks('play');   // Same as player.triggerCallbacks({type: 'play'});
+```
+
+_Example showing how to trigger a specific noteEvent_
+
+```javascript
+player.triggerCallbacks({type: 'noteOn', note: 40, timestamp: 500, length: 50});
+```
 
 ### removeCallbacks
 
-removeCallbacks
+Remove all callbacks attached to the player
 
 ### addEvent
-
-addEvent
 
 **Parameters**
 
 -   `newEvent` **noteEvent** must contain: timestamp, note, type [, optional properties]
+
+**Examples**
+
+```javascript
+player.addEvent({timestamp: 5000, note: 40, type: 'noteOn', length: 75, customPropOne: 'abc', customPropTwo: 'de'});
+```
 
 ### removeEvents
 
@@ -207,6 +247,20 @@ removes all events which have the same keys and properties as the search
 
 -   `search` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** e.g. {note: 40, type: 'noteOff'} or {timestamp: 500}
 
+**Examples**
+
+_Example showing how to delete all noteOff events with the note 40_
+
+```javascript
+player.removeEvents({note: 40, type: 'noteOff'});
+```
+
+_Example showing how to delete all events_
+
+```javascript
+player.removeEvents({});
+```
+
 ### reverseMidiData
 
-playing afterwards will play the song backwards, but currentTime will still start from zero (and not from the end)
+Reverse midi data so that playing afterwards will play the song backwards, but currentTime will still start from zero (and not from the end). (Not the same as reversing the order)
