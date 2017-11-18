@@ -1,0 +1,32 @@
+<DOCTYPE html>
+    <html>
+    <head>
+        <title>Midi Player</title>
+    </head>
+    <body>
+        <label for="midiFileInput">Please choose a midi file</label>
+        <input type="file" id="midiFileInput" accept=".mid">
+    
+        <!-- MidiParser Library -->
+        <script type="application/javascript" src="../build/MidiParser.js"></script>
+
+        <script type="application/javascript">
+            // Create midi parser
+            var parser = new MidiParser();
+
+            // Load file and parse midi
+            var fileReader = new FileReader();
+            var midiFileInput = document.getElementById('midiFileInput');
+            midiFileInput.addEventListener('change', function(inputEvent) {
+                if (!inputEvent.target.files.length)
+                    return false;
+
+                fileReader.readAsArrayBuffer(inputEvent.target.files[0]);
+                fileReader.onload = function(file) {
+                    var uint8Midi = new Uint8Array(file.target.result);
+                    const parsedMidi = parser.parseUint8(uint8Midi);
+                    document.body.innerHTML += '<pre>' + JSON.stringify(parsedMidi, null, 2) + '</pre>';
+                };
+            });
+        </script>
+    </body>
