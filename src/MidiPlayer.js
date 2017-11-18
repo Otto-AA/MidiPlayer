@@ -2,7 +2,6 @@ import MidiParser from './MidiParser';
 var Promise = require('es6-promise').Promise;
 
 /**
- * noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
@@ -14,11 +13,10 @@ var Promise = require('es6-promise').Promise;
  */
 
 /** MIDIPlayer
- * @description MidiPlayer loads a file.mid and provides callbacks for several events
+ * @description MidiPlayer loads a midi file and provides callbacks for several events
  */
 class MidiPlayer {
   constructor() {
-    this._numTracks = 0;
     this._events = [];
     this._playedEvents = [];
     this._currentTime = 0;
@@ -35,9 +33,9 @@ class MidiPlayer {
   }
   
   /** loadFromDataUrl
-   * @param {string}  midi          - b64 encoded midi file
-   * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted event
+   * @param {string}  midi            - b64 encoded midi file
+   * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
+   * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted event
    */
   loadFromDataUrl(midi, noteShift) {
     return new Promise((resolve, reject) => {
@@ -48,9 +46,9 @@ class MidiPlayer {
     });
   }
   /** loadFromUint8Array
-   * @param {Uint8Array}  midi      - uint8 array representing midi file
-   * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
-   * @returns {Promise<noteEvent[]>}             - resolving with an array containing the formatted events
+   * @param {Uint8Array}  midi        - uint8 array representing midi file
+   * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
+   * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted events
    */
   loadFromUint8Array(midi, noteShift) {
     return new Promise((resolve, reject) => {
@@ -61,9 +59,13 @@ class MidiPlayer {
     });
   }
   /** loadFromRelativeUrl
-   * @param {string}  url   - a relative url to the .mid file
-   * @param {int}     [noteShift=0] - changes the note value of each element by n. (e.g. for a piano this should be -21)
+   * @param {string}  url             - a relative url to the .mid file (e.g. ./data/test.mid)
+   * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
    * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted events
+   * @example <caption>Example for loading piano midi data</caption>
+   * loadFromRelativeUrl('./data/test.mid', -21)
+   *  .then(function(midiData) { console.log(midiData); })
+   *  .catch(function(error) { console.log(error); });
    */
   loadFromRelativeUrl(url, noteShift) {
     console.warn('loadFromRelativeUrl is not fully implemented and testet yet');
@@ -110,6 +112,8 @@ class MidiPlayer {
   /** addCallback
    * Add an event listener
    * @param {string}  eventName   - specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
+   * @example <caption>Example showing how to listen to noteOn events</caption>
+   * addCallback('noteOn', function(event) { console.log(event); });
    */
   addCallback(event, callback) {
     this._callbacks[event].push(callback);
@@ -234,14 +238,16 @@ class MidiPlayer {
   }
 
   /** getNextEventsByTime
+   * @description get all events which are in the range [currentTime <= event.timestamp <= currentTime + miliseconds]
    * @param {int} miliseconds   - specifies the end of the time range
-   * @returns {noteEvent[]}         - containing all events which are in the range [currentTime <-> currentTime + miliseconds]
+   * @returns {noteEvent[]}
    */
   getNextEventsByTime(miliseconds) {
     return this.getEventsByTimeRange(this._currentTime, this._currentTime + miliseconds);
   }
 
   /** getPreviousEventsByTime
+   * @description get all events which are in the range [currentTime - miliseconds <= event.timestamp <= currentTime]
    * @param {int} miliseconds   - specifies the start of the time range
    * @returns {noteEvent[]}         - containing all events which are in the range [currentTime - miliseconds <-> currentTime]
    */
@@ -250,11 +256,13 @@ class MidiPlayer {
   }
 
   /** getEventsByTimeRange
+   * @description get all events which are in the range [startTime <= event.timestamp <= endTime]
    * @param {int} startTime   - start of the time range in miliseconds
    * @param {int} endTime     - end of the time range in miliseconds
    * @returns {noteEvent[]}   - containing all events which are in the time range
    */
   getEventsByTimeRange(startTime, endTime) {
+    // TODO: Use more efficient method. e.g. binary search for identifying the start and end events.
     // Return all elements which are in this time span
     return [...this._playedEvents, ...this._events].filter(event => startTime <= event.timestamp && event.timestamp <= endTime);
   }
@@ -276,8 +284,11 @@ class MidiPlayer {
 
   /** addEvent
    * @param {noteEvent} newEvent - must contain: timestamp, note, type [, optional properties]
+   * @example
+   * addEvent({timestamp: 5000, note: 40, type: 'noteOn', length: 75, customPropOne: 'abc', customPropTwo: 'de'});
    */
   addEvent(newEvent) {
+    // TODO: add possibilty to add lots of events in an efficient way (e.g. sorting events to add, and then add them in ascnding order)
     // Check if required properties are given
     if (!newEvent.hasOwnProperty('timestamp')
      || !newEvent.hasOwnProperty('note')
@@ -298,6 +309,10 @@ class MidiPlayer {
   /** removeEvents
    * @description removes all events which have the same keys and properties as the search
    * @param {object}  search - e.g. {note: 40, type: 'noteOff'} or {timestamp: 500}
+   * @example <caption>Example showing how to delete all noteOff events with the note 40</caption>
+   * removeEvents({note: 40, type: 'noteOff'});
+   * @example <caption>Example showing how to delete all events</caption>
+   * removeEvents({});
    */
   removeEvents(search) {
     // objContainsObj
