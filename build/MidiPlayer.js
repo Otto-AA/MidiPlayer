@@ -1374,7 +1374,7 @@ var MidiPlayer = function () {
     }
 
     /**
-     * @param {noteEvent} newEvent - must contain: timestamp, note, type [, optional properties]
+     * @param {noteEvent} newEvent - must contain: timestamp, type [, optional properties]
      * @example
      * player.addEvent({timestamp: 5000, note: 40, type: 'noteOn', length: 75, customPropOne: 'abc', customPropTwo: 'de'});
      */
@@ -1384,7 +1384,7 @@ var MidiPlayer = function () {
     value: function addEvent(newEvent) {
       // TODO: add possibilty to add lots of events in an efficient way (e.g. sorting events to add, and then add them in ascending order)
       // Check if required properties are given
-      if (!newEvent.hasOwnProperty('timestamp') || !newEvent.hasOwnProperty('note') || !newEvent.hasOwnProperty('type')) {
+      if (!newEvent.hasOwnProperty('timestamp') || !newEvent.hasOwnProperty('type')) {
         throw new Error('Couldn\'t add event because not all neccessary properties where specifed');
       }
 

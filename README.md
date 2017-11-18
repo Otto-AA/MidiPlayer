@@ -114,7 +114,7 @@ There are several functions to get the playing status:
 
 ### Manually change midi data
 **addEvent**
--   `newEvent` **object** - must contain: type(noteOn/noteOff), timestamp, note
+-   `newEvent` **object** - must contain: type, timestamp
 
 Add the event to the midi data and automatically sort it by the timestamp. You can give it arbitrary properties which you can retrieve later when listening for events.
 
@@ -368,7 +368,7 @@ Remove all callbacks attached to the player
 
 **Parameters**
 
--   `newEvent` **noteEvent** must contain: timestamp, note, type [, optional properties]
+-   `newEvent` **noteEvent** must contain: timestamp, type [, optional properties]
 
 **Examples**
 
