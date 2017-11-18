@@ -92,21 +92,6 @@ describe('MidiPlayer', function() {
             midiPlayer.addCallback('play', () => done());
             midiPlayer.play();
         });
-        it('should trigger noteOff within the first few seconds', function(done) {
-            const doneTriggerOnce = oneTimeTrigger(done);
-            midiPlayer.addCallback('noteOff', () => doneTriggerOnce());
-            midiPlayer.play();
-        });
-        it('should trigger noteOn within the first few seconds', function(done) {
-            const doneTriggerOnce = oneTimeTrigger(done);
-            midiPlayer.addCallback('noteOn', () => doneTriggerOnce());
-            midiPlayer.play();
-        });
-        it('should trigger pause on pause', function(done) {
-            midiPlayer.addCallback('pause', () => done());
-            midiPlayer.play();
-            midiPlayer.pause();
-        });
         it('should trigger pause on stop', function(done) {
             midiPlayer.addCallback('pause', () => done());
             midiPlayer.play();
@@ -117,8 +102,28 @@ describe('MidiPlayer', function() {
             midiPlayer.play();
             midiPlayer.stop();
         });
-        it('should trigger finish at the end', function(done) {
+        it('should trigger noteOff after ~50ms', function(done) {
+            const doneTriggerOnce = oneTimeTrigger(done);
+            midiPlayer.addCallback('noteOff', () => doneTriggerOnce());
+            midiPlayer.play();
+        });
+        it('should trigger noteOn after ~10ms', function(done) {
+            const doneTriggerOnce = oneTimeTrigger(done);
+            midiPlayer.addCallback('noteOn', () => doneTriggerOnce());
+            midiPlayer.play();
+        });
+        it('should trigger pause on pause', function(done) {
+            midiPlayer.addCallback('pause', () => done());
+            midiPlayer.play();
+            midiPlayer.pause();
+        });
+        it('should trigger finish after ~60ms', function(done) {
             midiPlayer.addCallback('finish', () => done());
+            midiPlayer.play();
+        });
+        it('should trigger custom callbacks', function(done) {
+            midiPlayer.addEvent({timestamp: 20, note: 1, type: 'noteOn', length: 40, customPropOne: 'custom', customPropTwo: 'value'});
+            midiPlayer.addCustomCallback({note: 1, customPropOne: 'custom'}, () => done());
             midiPlayer.play();
         });
     });

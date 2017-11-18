@@ -965,7 +965,7 @@ var Promise = __webpack_require__(94).Promise;
  * @property {int|undefined} velocity
  */
 
-/** MIDIPlayer
+/**
  * @description MidiPlayer loads a midi file and provides callbacks for several events
  */
 
@@ -978,17 +978,10 @@ var MidiPlayer = function () {
     this._currentTime = 0;
     this._speed = 1;
     this._duration = 0;
-    this._callbacks = {
-      play: [],
-      finish: [],
-      pause: [],
-      stop: [],
-      noteOn: [],
-      noteOff: []
-    };
+    this._callbacks = [];
   }
 
-  /** loadFromDataUrl
+  /**
    * @param {string}  midi            - b64 encoded midi file
    * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
    * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted event
@@ -1007,7 +1000,7 @@ var MidiPlayer = function () {
         resolve(_this.getMidiEvents());
       });
     }
-    /** loadFromUint8Array
+    /**
      * @param {Uint8Array}  midi        - uint8 array representing midi file
      * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
      * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted events
@@ -1025,12 +1018,12 @@ var MidiPlayer = function () {
         resolve(_this2.getMidiEvents());
       });
     }
-    /** loadFromRelativeUrl
+    /**
      * @param {string}  url             - a relative url to the .mid file (e.g. ./data/test.mid)
      * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
      * @returns {Promise<noteEvent[]>}  - resolving with an array containing the formatted events
      * @example <caption>Example for loading piano midi data</caption>
-     * loadFromRelativeUrl('./data/test.mid', -21)
+     * player.loadFromRelativeUrl('./data/test.mid', -21)
      *  .then(function(midiData) { console.log(midiData); })
      *  .catch(function(error) { console.log(error); });
      */
@@ -1061,7 +1054,7 @@ var MidiPlayer = function () {
       });
     }
 
-    /** loadParsedMidi
+    /**
      * @param {noteEvent[]}   events    - array containing all formatted events
      * @param {int}     [noteShift=0]   - changes the note value of each element by n. (e.g. for a piano this should be -21)
      * @returns {noteEvent[]}
@@ -1084,20 +1077,43 @@ var MidiPlayer = function () {
       return this.getMidiEvents();
     }
 
-    /** addCallback
-     * Add an event listener
-     * @param {string}  eventName   - specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
+    /**
+     * @description Add an event listener
+     * @param {string}   eventName   - specifies the trigger event name. Possible events are: start, finish, noteOn, noteOff
+     * @param {function} callback
      * @example <caption>Example showing how to listen to noteOn events</caption>
-     * addCallback('noteOn', function(event) { console.log(event); });
+     * player.addCallback('noteOn', function(event) { console.log(event); });
      */
 
   }, {
     key: 'addCallback',
-    value: function addCallback(event, callback) {
-      this._callbacks[event].push(callback);
+    value: function addCallback(eventName, callback) {
+      var targetEvent = { type: eventName };
+      return this.addCustomCallback(targetEvent, callback);
     }
 
-    /** play
+    /**
+    * @description Add an event listener to a specific event
+    * @param {object}   targetEvent
+    * @param {function} callback
+    * @example <caption>Example showing how to listen to noteOn events with the note 40</caption>
+    * player.addCustomCallback({
+    *   type: 'noteOn',
+    *   note: 40
+    * }, function(event) { console.log(event); });
+    */
+
+  }, {
+    key: 'addCustomCallback',
+    value: function addCustomCallback(targetEvent, callback) {
+      // TODO: return id so it can be removed later (const listener = player.addCustomCallback({}, () => {}); player.removeCallback(listener);)
+      this._callbacks.push({
+        targetEvent: targetEvent,
+        callback: callback
+      });
+    }
+
+    /**
      * @description start playing the parsed midi from the current time
      */
 
@@ -1163,7 +1179,7 @@ var MidiPlayer = function () {
       return play;
     }()
 
-    /** pause
+    /**
      * @description pauses the playing at the current time
      */
 
@@ -1176,7 +1192,7 @@ var MidiPlayer = function () {
       }
     }
 
-    /** stop
+    /**
      * @description pauses the playing and sets the current time to zero
      */
 
@@ -1188,7 +1204,7 @@ var MidiPlayer = function () {
       this.triggerCallbacks('stop');
     }
 
-    /** reset
+    /**
      * @description stops the player and removes all events
      */
 
@@ -1199,7 +1215,7 @@ var MidiPlayer = function () {
       this.removeEvents({});
     }
 
-    /** setTime
+    /**
      * @param {int} miliseconds
      */
 
@@ -1218,7 +1234,7 @@ var MidiPlayer = function () {
       this._currentTime = miliseconds;
     }
 
-    /** getCurrentTime
+    /**
      * @returns {int}   - current time in miliseconds
      */
 
@@ -1232,7 +1248,7 @@ var MidiPlayer = function () {
       return this._currentTime;
     }
 
-    /** setSpeed
+    /**
      * @param {int} speed   - relative speed (1 is normal, 2 is double, 0.5 is half)
      */
 
@@ -1245,7 +1261,7 @@ var MidiPlayer = function () {
       this._speed = speed;
     }
 
-    /** getCurrentSpeed
+    /**
      * @returns {int}   - current relative speed
      */
 
@@ -1255,7 +1271,7 @@ var MidiPlayer = function () {
       return this._speed;
     }
 
-    /** isPlaying
+    /**
      * @returns {bool}
      */
 
@@ -1265,7 +1281,7 @@ var MidiPlayer = function () {
       return this._playing;
     }
 
-    /** getDuration
+    /**
      * @returns {float} - duration of the midi in miliseconds
      */
 
@@ -1275,8 +1291,8 @@ var MidiPlayer = function () {
       return this._duration;
     }
 
-    /** getMidiEvents
-     * @returns {noteEvent[]}   - (all loaded events)
+    /**
+     * @returns {noteEvent[]} - (all loaded events)
      */
 
   }, {
@@ -1285,7 +1301,7 @@ var MidiPlayer = function () {
       return [].concat((0, _toConsumableArray3.default)(this._playedEvents), (0, _toConsumableArray3.default)(this._events));
     }
 
-    /** getNextEventsByTime
+    /**
      * @description get all events which are in the range [currentTime <= event.timestamp <= currentTime + miliseconds]
      * @param {int} miliseconds   - specifies the end of the time range
      * @returns {noteEvent[]}
@@ -1297,7 +1313,7 @@ var MidiPlayer = function () {
       return this.getEventsByTimeRange(this._currentTime, this._currentTime + miliseconds);
     }
 
-    /** getPreviousEventsByTime
+    /**
      * @description get all events which are in the range [currentTime - miliseconds <= event.timestamp <= currentTime]
      * @param {int} miliseconds   - specifies the start of the time range
      * @returns {noteEvent[]}         - containing all events which are in the range [currentTime - miliseconds <-> currentTime]
@@ -1309,7 +1325,7 @@ var MidiPlayer = function () {
       return this.getEventsByTimeRange(this._currentTime - miliseconds, this._currentTime);
     }
 
-    /** getEventsByTimeRange
+    /** 
      * @description get all events which are in the range [startTime <= event.timestamp <= endTime]
      * @param {int} startTime   - start of the time range in miliseconds
      * @param {int} endTime     - end of the time range in miliseconds
@@ -1326,39 +1342,47 @@ var MidiPlayer = function () {
       });
     }
 
-    /** triggerCallbacks
-     * @param {string}  event   - the eventname which will be triggered
-     * @param {any}     data    - data passed to the callbacks
+    /**
+     * @param {string|object}  event   - string -> type which will be triggered | object -> event which will be triggered
+     * @example <caption>Example showing how to trigger play</caption>
+     * player.triggerCallbacks('play');   // Same as player.triggerCallbacks({type: 'play'});
+     * @example <caption>Example showing how to trigger a specific noteEvent</caption>
+     * player.triggerCallbacks({type: 'noteOn', note: 40, timestamp: 500, length: 50});
      */
 
   }, {
     key: 'triggerCallbacks',
-    value: function triggerCallbacks(event, data) {
-      this._callbacks[event].forEach(function (callback) {
-        return callback(data);
+    value: function triggerCallbacks(event) {
+      if (typeof event === 'string') {
+        event = { type: event };
+      }
+      this._callbacks.forEach(function (customCallback) {
+        if (objContainsObj(event, customCallback.targetEvent)) {
+          customCallback.callback(event);
+        }
       });
     }
 
-    /** removeCallbacks  */
+    /** 
+     * @description Remove all callbacks attached to the player
+     */
 
   }, {
     key: 'removeCallbacks',
     value: function removeCallbacks() {
-      for (var key in this._callbacks) {
-        this._callbacks[key] = [];
-      }
+      this._callbacks = [];
     }
 
-    /** addEvent
+    /**
      * @param {noteEvent} newEvent - must contain: timestamp, note, type [, optional properties]
      * @example
-     * addEvent({timestamp: 5000, note: 40, type: 'noteOn', length: 75, customPropOne: 'abc', customPropTwo: 'de'});
+     * player.addEvent({timestamp: 5000, note: 40, type: 'noteOn', length: 75, customPropOne: 'abc', customPropTwo: 'de'});
      */
 
   }, {
     key: 'addEvent',
     value: function addEvent(newEvent) {
-      // TODO: add possibilty to add lots of events in an efficient way (e.g. sorting events to add, and then add them in ascnding order)
+      // TODO: add possibilty to add lots of events in an efficient way (e.g. sorting events to add, and then add them in ascending order)
       // Check if required properties are given
       if (!newEvent.hasOwnProperty('timestamp') || !newEvent.hasOwnProperty('note') || !newEvent.hasOwnProperty('type')) {
         throw new Error('Couldn\'t add event because not all neccessary properties where specifed');
@@ -1376,62 +1400,18 @@ var MidiPlayer = function () {
       this._updateDuration();
     }
 
-    /** removeEvents
+    /**
      * @description removes all events which have the same keys and properties as the search
      * @param {object}  search - e.g. {note: 40, type: 'noteOff'} or {timestamp: 500}
      * @example <caption>Example showing how to delete all noteOff events with the note 40</caption>
-     * removeEvents({note: 40, type: 'noteOff'});
+     * player.removeEvents({note: 40, type: 'noteOff'});
      * @example <caption>Example showing how to delete all events</caption>
-     * removeEvents({});
+     * player.removeEvents({});
      */
 
   }, {
     key: 'removeEvents',
     value: function removeEvents(search) {
-      // objContainsObj
-      // checks if the original object has all keys of the comparison object and if the values are the same
-      var objContainsObj = function objContainsObj(original, comparison) {
-        var originalKeys = Object.keys(original);
-        var comparisonKeys = Object.keys(comparison);
-
-        // Check if original has all keys of the comparison object
-        if (!comparisonKeys.every(function (key) {
-          return originalKeys.includes(key);
-        })) {
-          return false;
-        }
-
-        // Check if values are the same
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = comparisonKeys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var key = _step.value;
-
-            if (original[key] !== comparison[key]) {
-              return false;
-            }
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
-        return true;
-      };
-
       this._playedEvents = this._playedEvents.filter(function (event) {
         return !objContainsObj(event, search);
       });
@@ -1440,8 +1420,8 @@ var MidiPlayer = function () {
       });
     }
 
-    /** reverseMidiData
-     * @description playing afterwards will play the song backwards, but currentTime will still start from zero (and not from the end)
+    /**
+     * @description Reverse midi data so that playing afterwards will play the song backwards, but currentTime will still start from zero (and not from the end). (Not the same as reversing the order)
      */
 
   }, {
@@ -1484,7 +1464,9 @@ var MidiPlayer = function () {
       this.loadParsedMidi(events);
     }
 
-    /** _updateCurrentTime */
+    /** 
+     * @description Update currentTime based on _startingTime, _speed and the date time
+     */
 
   }, {
     key: '_updateCurrentTime',
@@ -1492,7 +1474,9 @@ var MidiPlayer = function () {
       this._currentTime = (new Date().getTime() - this._startingTime) * this.getCurrentSpeed();
     }
 
-    /** updateDuration */
+    /** 
+     * @description Update duration of the piece according to the midi data
+     */
 
   }, {
     key: '_updateDuration',
@@ -1506,10 +1490,10 @@ var MidiPlayer = function () {
       this._duration = duration;
     }
 
-    /** _waitForEvent
-     * Waits until event.timestamp and currentTime are equal
+    /**
+     * @description Wait until event.timestamp and currentTime are equal
      * @param {noteEvent}  event
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
 
   }, {
@@ -1524,25 +1508,71 @@ var MidiPlayer = function () {
       });
     }
 
-    /** _handleEvent
+    /**
      * @param {noteEvent} event
      */
 
   }, {
     key: '_handleEvent',
     value: function _handleEvent(event) {
-      this.triggerCallbacks(event.type, event);
+      this.triggerCallbacks(event);
     }
   }]);
   return MidiPlayer;
 }();
 
+// objContainsObj
+//
+// checks if the original object has all keys of the comparison object and if the values are the same
+//
+
+
+var objContainsObj = function objContainsObj(original, comparison) {
+  var originalKeys = Object.keys(original);
+  var comparisonKeys = Object.keys(comparison);
+
+  // Check if original has all keys of the comparison object
+  if (!comparisonKeys.every(function (key) {
+    return originalKeys.includes(key);
+  })) {
+    return false;
+  }
+
+  // Check if values are the same
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = comparisonKeys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var key = _step.value;
+
+      if (original[key] !== comparison[key]) {
+        return false;
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return true;
+};
+
 // locationOf
 //
 // returns the location where an element should be in a sorted array
 //
-
-
 var locationOf = function locationOf(element, array, comparer, start, end) {
   if (array.length === 0) {
     return -1;
