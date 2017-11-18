@@ -1,6 +1,6 @@
 import base64 from './base64';
 
-/** noteEvent
+/** typedef noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
@@ -11,26 +11,14 @@ import base64 from './base64';
  * @property {int|undefined} velocity
  */
 
-/** MidiParser
- * parses a midi to an array of formatted events
- * 
- * @function parseText(text)
- * @function parseDataUrl(b64Midi)
- * @function parseUint8(uint8Midi)
- * 
- * @returns {noteEvent[]}
- * 
- * Event format {
- * 		channel: {int},
- * 		noteNumber: {int}
- * 		subtype: {string}
- * 		timestamp: {int}
- * 		track: {int}
- * 		velocity: {int}
- * }
+/**
+ * @description Class for parsing raw midi data to an array of formatted noteOn/noteOff events
  */
-
 class MidiParser {
+    /**
+     * @param {string} text - midi in text/plain format
+     * @returns {noteEvent[]}
+     */
     parseText(text) {
         try {
             const midiFile = MidiFile(text);
@@ -42,14 +30,26 @@ class MidiParser {
             throw new Error(event);
         }
     }
+    /**
+     * @param {string} dataUrl - midi in b64 data url format
+     * @returns {noteEvent[]}
+     */
     parseDataUrl(dataUrl) {
         const data = base64.atob(dataUrl.split(',')[1]);
         return this.parseText(data);
     }
+    /**
+     * @param {Uint8Array} uint8 - midi in Uint8Array format
+     * @returns {noteEvent[]}
+     */
     parseUint8(uint8) {
         const data = String.fromCharCode.apply(null, uint8);
         return this.parseText(data);
     }
+    /**
+     * @param {object[]} midiData - unformatted midi data from Replayer.getData()
+     * @returns {noteEvent[]}
+     */
     _formatReplayerData(midiData) {
         const data = midiData;
         const formattedData = [];
@@ -97,8 +97,8 @@ class MidiParser {
 
 export default MidiParser;
 
-/* Note: The following code is an abstracted and slightly adapted version of MIDI.js
- * Github link:         https://github.com/mudcube/MIDI.js
+/* Note: The following code is an abstracted and slightly adapted version of jasmid
+ * Github link:         https://github.com/gasman/jasmid
  */
 
 /** Stream

@@ -3439,7 +3439,7 @@ var _base2 = _interopRequireDefault(_base);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/** noteEvent
+/** typedef noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
@@ -3450,25 +3450,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @property {int|undefined} velocity
  */
 
-/** MidiParser
- * parses a midi to an array of formatted events
- * 
- * @function parseText(text)
- * @function parseDataUrl(b64Midi)
- * @function parseUint8(uint8Midi)
- * 
- * @returns {noteEvent[]}
- * 
- * Event format {
- * 		channel: {int},
- * 		noteNumber: {int}
- * 		subtype: {string}
- * 		timestamp: {int}
- * 		track: {int}
- * 		velocity: {int}
- * }
+/**
+ * @description Class for parsing raw midi data to an array of formatted noteOn/noteOff events
  */
-
 var MidiParser = function () {
     function MidiParser() {
         (0, _classCallCheck3.default)(this, MidiParser);
@@ -3476,6 +3460,11 @@ var MidiParser = function () {
 
     (0, _createClass3.default)(MidiParser, [{
         key: 'parseText',
+
+        /**
+         * @param {string} text - midi in text/plain format
+         * @returns {noteEvent[]}
+         */
         value: function parseText(text) {
             try {
                 var midiFile = MidiFile(text);
@@ -3487,18 +3476,33 @@ var MidiParser = function () {
                 throw new Error(event);
             }
         }
+        /**
+         * @param {string} dataUrl - midi in b64 data url format
+         * @returns {noteEvent[]}
+         */
+
     }, {
         key: 'parseDataUrl',
         value: function parseDataUrl(dataUrl) {
             var data = _base2.default.atob(dataUrl.split(',')[1]);
             return this.parseText(data);
         }
+        /**
+         * @param {Uint8Array} uint8 - midi in Uint8Array format
+         * @returns {noteEvent[]}
+         */
+
     }, {
         key: 'parseUint8',
         value: function parseUint8(uint8) {
             var data = String.fromCharCode.apply(null, uint8);
             return this.parseText(data);
         }
+        /**
+         * @param {object[]} midiData - unformatted midi data from Replayer.getData()
+         * @returns {noteEvent[]}
+         */
+
     }, {
         key: '_formatReplayerData',
         value: function _formatReplayerData(midiData) {
@@ -3548,8 +3552,8 @@ var MidiParser = function () {
 
 exports.default = MidiParser;
 
-/* Note: The following code is an abstracted and slightly adapted version of MIDI.js
- * Github link:         https://github.com/mudcube/MIDI.js
+/* Note: The following code is an abstracted and slightly adapted version of jasmid
+ * Github link:         https://github.com/gasman/jasmid
  */
 
 /** Stream
