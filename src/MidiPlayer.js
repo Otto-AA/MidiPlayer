@@ -1,7 +1,6 @@
 import MidiParser from './MidiParser';
-var Promise = require('es6-promise').Promise;
 
-/**
+/** typedef noteEvent
  * @typedef noteEvent
  * @property {int} channel
  * @property {int} note
@@ -141,7 +140,7 @@ class MidiPlayer {
    * @description Remove a callback
    * @param {any} id
    * @returns {bool}  callback has been found and removed
-   * @example
+   * @example <caption>Example showing how to store a callback id and delete the callback with it</caption>
    * const playCallback = player.addCallback('play', function() { console.log('play'); });
    * player.removeCallback(playCallback);
    */
@@ -149,6 +148,31 @@ class MidiPlayer {
     const numCallbacks = this._callbacks.length;
     this._callbacks = this._callbacks.filter(callback => callback.id !== id);
     return numCallbacks > this._callbacks.length;
+  }
+  
+  /** 
+   * @description Remove all callbacks attached to the player
+   */
+  removeAllCallbacks() {
+    this._callbacks = [];
+  }
+  
+  /**
+   * @param {string|object}  event   - string -> type which will be triggered | object -> event which will be triggered
+   * @example <caption>Example showing how to trigger play</caption>
+   * player.triggerCallbacks('play');   // Same as player.triggerCallbacks({type: 'play'});
+   * @example <caption>Example showing how to trigger a specific noteEvent</caption>
+   * player.triggerCallbacks({type: 'noteOn', note: 40, timestamp: 500, length: 50});
+   */
+  triggerCallbacks(event) {
+    if (typeof event === 'string') {
+      event = { type: event };
+    }
+    this._callbacks.forEach(customCallback => {
+      if (objContainsObj(event, customCallback.targetEvent)) {
+        customCallback.callback(event);
+      }
+    });
   }
   
   /**
@@ -297,31 +321,6 @@ class MidiPlayer {
     // TODO: Use more efficient method. e.g. binary search for identifying the start and end events.
     // Return all elements which are in this time span
     return [...this._playedEvents, ...this._events].filter(event => startTime <= event.timestamp && event.timestamp <= endTime);
-  }
-  
-  /**
-   * @param {string|object}  event   - string -> type which will be triggered | object -> event which will be triggered
-   * @example <caption>Example showing how to trigger play</caption>
-   * player.triggerCallbacks('play');   // Same as player.triggerCallbacks({type: 'play'});
-   * @example <caption>Example showing how to trigger a specific noteEvent</caption>
-   * player.triggerCallbacks({type: 'noteOn', note: 40, timestamp: 500, length: 50});
-   */
-  triggerCallbacks(event) {
-    if (typeof event === 'string') {
-      event = { type: event };
-    }
-    this._callbacks.forEach(customCallback => {
-      if (objContainsObj(event, customCallback.targetEvent)) {
-        customCallback.callback(event);
-      }
-    });
-  }
-
-  /** 
-   * @description Remove all callbacks attached to the player
-   */
-  removeAllCallbacks() {
-    this._callbacks = [];
   }
 
   /**
