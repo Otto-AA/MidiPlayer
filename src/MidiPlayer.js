@@ -23,6 +23,7 @@ class MidiPlayer {
     this._speed = 1;
     this._duration = 0;
     this._callbacks = [];
+    this._highestCallbackId = -1;
   }
   
   /**
@@ -118,6 +119,7 @@ class MidiPlayer {
   * @description Add an event listener to a specific event
   * @param {object}   targetEvent
   * @param {function} callback
+  * @returns {any}  id for removal of the callback
   * @example <caption>Example showing how to listen to noteOn events with the note 40</caption>
   * player.addCustomCallback({
   *   type: 'noteOn',
@@ -125,11 +127,28 @@ class MidiPlayer {
   * }, function(event) { console.log(event); });
   */
   addCustomCallback(targetEvent, callback) {
-    // TODO: return id so it can be removed later (const listener = player.addCustomCallback({}, () => {}); player.removeCallback(listener);)
-     this._callbacks.push({
+    const id = this._highestCallbackId + 1;
+    this._highestCallbackId = id;
+    this._callbacks.push({
       targetEvent,
       callback,
+      id,
     });
+    return id;
+  }
+
+  /**
+   * @description Remove a callback
+   * @param {any} id
+   * @returns {bool}  callback has been found and removed
+   * @example
+   * const playCallback = player.addCallback('play', function() { console.log('play'); });
+   * player.removeCallback(playCallback);
+   */
+  removeCallback(id) {
+    const numCallbacks = this._callbacks.length;
+    this._callbacks = this._callbacks.filter(callback => callback.id !== id);
+    return numCallbacks > this._callbacks.length;
   }
   
   /**
@@ -301,7 +320,7 @@ class MidiPlayer {
   /** 
    * @description Remove all callbacks attached to the player
    */
-  removeCallbacks() {
+  removeAllCallbacks() {
     this._callbacks = [];
   }
 

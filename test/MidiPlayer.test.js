@@ -70,7 +70,7 @@ describe('MidiPlayer', function() {
 
     describe('callbacks', function() {
         beforeEach('reset player', function() {
-            midiPlayer.removeCallbacks();
+            midiPlayer.removeAllCallbacks();
             midiPlayer.reset();
             midiPlayer.addEvent({timestamp: 10, note: 40, type: 'noteOn', length: 40});
             midiPlayer.addEvent({timestamp: 20, note: 1, type: 'noteOn', length: 40});
@@ -78,7 +78,7 @@ describe('MidiPlayer', function() {
             midiPlayer.addEvent({timestamp: 60, note: 1, type: 'noteOff'});
         });
         after(function () {
-            midiPlayer.removeCallbacks();
+            midiPlayer.removeAllCallbacks();
         });
 
         const oneTimeTrigger = function(callback) {
@@ -102,14 +102,14 @@ describe('MidiPlayer', function() {
             midiPlayer.play();
             midiPlayer.stop();
         });
-        it('should trigger noteOff after ~50ms', function(done) {
-            const doneTriggerOnce = oneTimeTrigger(done);
-            midiPlayer.addCallback('noteOff', () => doneTriggerOnce());
-            midiPlayer.play();
-        });
         it('should trigger noteOn after ~10ms', function(done) {
             const doneTriggerOnce = oneTimeTrigger(done);
             midiPlayer.addCallback('noteOn', () => doneTriggerOnce());
+            midiPlayer.play();
+        });
+        it('should trigger noteOff after ~50ms', function(done) {
+            const doneTriggerOnce = oneTimeTrigger(done);
+            midiPlayer.addCallback('noteOff', () => doneTriggerOnce());
             midiPlayer.play();
         });
         it('should trigger pause on pause', function(done) {
@@ -124,6 +124,14 @@ describe('MidiPlayer', function() {
         it('should trigger custom callbacks', function(done) {
             midiPlayer.addEvent({timestamp: 20, note: 1, type: 'noteOn', length: 40, customPropOne: 'custom', customPropTwo: 'value'});
             midiPlayer.addCustomCallback({note: 1, customPropOne: 'custom'}, () => done());
+            midiPlayer.play();
+        });
+        it('should not call removed callbacks', function(done) {
+            const callbackPlay = midiPlayer.addCallback('play', () => assert.ok(false));
+            const callbackNoteOn = midiPlayer.addCustomCallback({type: 'noteOn'}, () => assert.ok(false));
+            midiPlayer.addCallback('finish', () => done());
+            midiPlayer.removeCallback(callbackPlay);
+            midiPlayer.removeCallback(callbackNoteOn);
             midiPlayer.play();
         });
     });
@@ -150,15 +158,11 @@ describe('MidiPlayer', function() {
                 try {
                     midiPlayer.addEvent({timestamp: 0});
                     throw false;
-                } catch (e) {if (!e) throw new Error('no error thrown with no properties given');}
+                } catch (e) {if (!e) throw new Error('no error thrown with timestamp given');}
                 try {
                     midiPlayer.addEvent({timestamp: 0, type: 'noteOn'});
-                    throw false;
-                } catch (e) {if (!e) throw new Error('no error thrown with no properties given');}
-                try {
-                    midiPlayer.addEvent({timestamp: 0, type: 'noteOn', note: 0});
                 } catch(e) {
-                    throw new Error('error thrown with timestamp, type and note given');
+                    throw new Error('error thrown with timestamp and type given');
                 }
             });
             it('should play added events', function(done) {
