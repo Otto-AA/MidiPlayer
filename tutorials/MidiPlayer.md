@@ -230,11 +230,11 @@ player.removeEvents({});                            // Would remove all events
 If you want to play the midi backwards, you can use `player.reverseMidiData()` and then play as normal. Note that it does not play it backwards, but changes the timestamps to achieve a similar result. Therefore the currentTime will still start at zero.
 
 ```javascript
-midiPlayer.addEvent({timestamp: 0, note: 20, type: 'noteOn', length: 250});
-midiPlayer.addEvent({timestamp: 250, note: 20, type: 'noteOff'});
-midiPlayer.addEvent({timestamp: 1000, note: 50, type: 'noteOn', length: 100});
-midiPlayer.addEvent({timestamp: 1100, note: 50, type: 'noteOff'});
-midiPlayer.reverseMidiData();
+player.addEvent({timestamp: 0, note: 20, type: 'noteOn', length: 250});
+player.addEvent({timestamp: 250, note: 20, type: 'noteOff'});
+player.addEvent({timestamp: 1000, note: 50, type: 'noteOn', length: 100});
+player.addEvent({timestamp: 1100, note: 50, type: 'noteOff'});
+player.reverseMidiData();
 
 /* player.getCurrentEvents() will be
   [ {timestamp: 0, note: 50, type: 'noteOn', length: 100},
@@ -243,7 +243,7 @@ midiPlayer.reverseMidiData();
     {timestamp: 1250, note: 20, type: 'noteOff'} ]
 */
 
-midiPlayer.play();
+player.play();
 ```
 
 ### Custom modifications to events
@@ -263,12 +263,9 @@ player.loadFromDataUrl(dataUrl, 0)
         });
 
         // Reload the player with modified events
-        player.loadParsedMidi(events)
-            .then(function() {
-                player.addCallback('noteOn', function(event) { console.log(event.index); });
-                player.play();
-            })
-            .catch(/* error */);
+        player.loadParsedMidi(events);  // Note that this is synchrounous and does not return a promise
+        player.addCallback('noteOn', function(event) { console.log(event.index); });
+        player.play();
     })
     .catch(/* error */);
 ```
