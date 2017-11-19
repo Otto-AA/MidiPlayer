@@ -9,7 +9,7 @@ This example demonstrates the basic usage of MidiPlayer. You can also view a [co
 var player = new MidiPlayer();
 player.addCallback('noteOn', function (event) {/* handle noteOn event */});
 player.addCallback('noteOff', function (event) {/* handle noteOff event */});
-player.loadFromUint8Array(uint8Midi)
+player.loadFromRelativeUrl('./test.mid')
     .then(function() { player.play(); });
 ```
 
