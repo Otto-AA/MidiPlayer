@@ -2,9 +2,9 @@
 ## Loading the Library
 To use MidiParser.js you can choose one of the following methods. The first one is using ES6 which (currently) needs to be compiled into older versions of javascript before publishing it. The second one uses the good old `<script>` tag, so it can be used without compiling.
 
-#### Using ES6  `import`:
+### Using ES6  `import`:
 
-Download the files in [src](./src) and import the MidiParser as follows:
+Download the files in [src](../src) and import the MidiParser as follows:
 
 ```javascript
 import MidiParser from './path/to/src/MidiParser';
@@ -12,8 +12,8 @@ const parser = new MidiParser();
 // player.parseDataUrl...
 ```
 
-#### Using `<script>`
-Download [MidiParser.js](./build/MidiParser.js) from [build](./build).
+### Using `<script>`
+Download [MidiParser.js](../build/MidiParser.js) from [build](../build).
 
 In your html:
 ```html
@@ -71,13 +71,13 @@ midiFileInput.addEventListener('change', function(inputEvent) {
 
 ## Using the data
 The parse functions return an array of formatted events. Events look like this:
-- {int} channel
-- {int} note
-- {float|undefined} length
-- {float} timestamp
-- {int} track
-- {string} type (either 'noteOn' or 'noteOff')
-- {int|undefined} velocity
+- **channel**    {int} 
+- **note**       {int} 
+- **timestamp**  {float} 
+- **track**      {int} 
+- **type**       {string} (either 'noteOn' or 'noteOff')   
+- **length**     {float|undefined} 
+- **velocity**   {int|undefined} 
 
 An example output would be:
 ```javascript
@@ -93,8 +93,8 @@ An example output would be:
   },
   {
     "channel": 0,
-    "note": 71,
-    "timestamp": 2000,
+    "note": 40,
+    "timestamp": 266.6,
     "track": 0,
     "type": "noteOff"
   }, ...
