@@ -61,7 +61,6 @@ class MidiPlayer {
    *  .catch(function(error) { console.log(error); });
    */
   loadFromRelativeUrl(url, noteShift) {
-    console.warn('loadFromRelativeUrl is not fully implemented and testet yet');
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest;
       xhr.open('GET', url, true);
