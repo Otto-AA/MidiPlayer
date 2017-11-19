@@ -22,7 +22,7 @@ A quick tutorial on how to read midi files and listen to events with MidiPlayer.
     -   [Custom modifications to events](#custom-modifications-to-events)
 
 ## Loading the Library
-To use MidiPlayer in your script you can choose one of the following methods. The first one is using ES6 which (currently) needs to be compiled into older versions of javascript before publishing it. The second one uses the good old `<script>` tag, so it can be used without compiling.
+To use MidiPlayer in your script you can choose one of the following methods. The first one is using ES6 which (currently) needs to be compiled into older versions of javascript before publishing it. The second one uses an already compiled version combined with the good old `<script>` tag, so it can be used without compiling.
 
 ### Using ES6  `import`
 
@@ -58,7 +58,7 @@ player.loadFromRelativeUrl(url, -21)    // Use noteshift -21 for piano
     .then(function(midiData) {
         console.log(midiData);
         var handleEvent = function(event) {
-            document.body.innerHtml += '<pre>' + JSON.stringify(event, null, 2) + '</pre>';
+            document.body.innerHTML += '<pre>' + JSON.stringify(event, null, 2) + '</pre>';
         }
         player.addCallback('play', handleEvent);
         player.addCallback('pause', handleEvent);
@@ -72,7 +72,7 @@ player.loadFromRelativeUrl(url, -21)    // Use noteshift -21 for piano
         
         // Loop
         player.addCallback('finish', function() {
-            player.stop();  // Pauses and sets time to 0
+            player.setTime(0);
             player.play();
         });
 
@@ -120,7 +120,8 @@ midiFileInput.addEventListener('change', function(inputEvent) {
     fileReader.readAsDataURL(inputEvent.target.files[0]);
     fileReader.onload = function(file) {
         // Load the MidiPlayer with the data url
-        player.loadFromDataUrl(file, 0)
+        var dataUrl = file.target.result;
+        player.loadFromDataUrl(dataUrl, 0)
             .then(function(midiData) {
                 console.log(midiData);
                 player.play();
@@ -143,8 +144,7 @@ With this function you are able to listen to following events:
 ```javascript
 // Printing out all played noteOn events
 player.addCallback('noteOn', function(event) { console.log(event); });
-player.loadFromDataUrl(dataUrl)
-    .then(player.play);
+player.play();
 ```
 
 ### addCustomCallback
@@ -158,8 +158,7 @@ player.addEvent({type: 'someType', timestamp: 1000, someProp: 'someVal'});
 player.addCustomCallback({type: 'someType'}, function(event) { console.log(event.someProp); });
 
 // Start playing
-player.loadFromDataUrl(dataUrl)
-    .then(player.play);
+player.play();
 ```
 
 ### removeCallback
