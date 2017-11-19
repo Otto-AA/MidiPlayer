@@ -3,7 +3,7 @@ A quick tutorial on how to read midi files and listen to events with MidiPlayer.
 
 ## Contents
 -   [Loading the Library](#loading-the-library)
-    -   [Using ES6 `import`](#using-es6-import)
+    -   [Using ES6 `import`](#using-es6--import)
     -   [Using &lt;script&gt;](#using-script)
 -   [Quick Start](#quick-start)
 -   [Load midi file](#load-midi-file)
