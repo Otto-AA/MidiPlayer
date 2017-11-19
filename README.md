@@ -13,8 +13,8 @@ player.loadFromUint8Array(uint8Midi)
     .then(function() { player.play(); });
 ```
 
-# Tutorial & Documentation
-There are tutorials and documentations for both, MidiPlayer.js and MidiParser.js, available:
+# Tutorial and Documentation
+For **MidiPlayer.js** aswell as **MidiParser.js**
 - [Tutorials](./tutorials)
 - [Documentations](./docs)
 - [Examples](./examples)
